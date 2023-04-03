@@ -6,6 +6,8 @@
 #include <QCloseEvent>
 #include <string>
 #include "thread.h"
+#include "bulletlist.h"
+#include <iostream>
 class serverManager{
 public:
     LocalServer *server;
@@ -32,8 +34,15 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-    serverManager *manager= new serverManager();
-    manager->waitConnection();
+   // serverManager *manager= new serverManager();
+   // manager->waitConnection();
+
+    bulletList list;
+    list.insert(10);
+    list.deleteNode(7,true);
+    list.show();
+
+
 
     return a.exec();
 
