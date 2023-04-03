@@ -4,12 +4,16 @@
 #include <QThread>
 #include "localserver.h"
 
+
+#include "levelwidget.h"
 class MyThread : public QThread
 {
     Q_OBJECT
 
 public:
     LocalServer *server;
+
+    levelWidget widget;
 
     explicit MyThread(QObject *parent = nullptr);
     ~MyThread();

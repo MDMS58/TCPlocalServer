@@ -16,8 +16,10 @@ void MyThread::run()
             // Leer los datos del socket
             QByteArray data = server->socket->readAll();
             // Imprimir los datos leídos
-            if(data!="")
-                qDebug() << "Datos recibidos:" << data;
+            if(data=="1"){
+                MyThread::widget.show();
+            }
+
         });
         msleep(0.001);
     }

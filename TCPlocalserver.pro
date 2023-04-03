@@ -9,11 +9,13 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    levelwidget.cpp \
     localserver.cpp \
     main.cpp \
     thread.cpp
 
 HEADERS += \
+    levelwidget.h \
     localserver.h \
     thread.h
 
