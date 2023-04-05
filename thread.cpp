@@ -4,6 +4,8 @@
 #include <QTimer>
 
 QGraphicsRectItem *item = new QGraphicsRectItem(0, 0, 50, 50);
+bool f = true;
+bool w = true;
 
 MyThread::MyThread(QObject *parent)
     : QThread(parent)
@@ -38,6 +40,18 @@ void MyThread::widget_1(){
         qreal newX = currentPos.x() + 5;
         rect->setPos(newX, currentPos.y());
 
+        if(!f){
+            item->setPos(item->pos().x(),item->pos().y()+10);
+
+            f=true;
+        }
+        if(!w){
+            item->setPos(item->pos().x(),item->pos().y()-10);
+
+            w=true;
+        }
+
+
         if (newX >= 1000   ) {
             rect->setPos(20,item->pos().y());
         }
@@ -61,11 +75,13 @@ void MyThread::run()
             }
             else if (data=="S"){
                 qDebug()<<data;
-                item->setPos(item->pos().x(),item->pos().y()+10);
+
+              f=false;
             }
             else if (data=="W"){
                 qDebug()<<data;
-                item->setPos(item->pos().x(),item->pos().y()-10);
+
+               w=false;
             }
 
         });
