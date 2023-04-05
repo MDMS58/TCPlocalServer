@@ -1,32 +1,17 @@
 #include "widget.h"
 #include "ui_widget.h"
-#include "localserver.h"
-#include <QMessageBox>
-#include <QThread>
-Widget::Widget(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::Widget)
+#include "scene.h"
+
+widget::widget(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::widget)
 {
     ui->setupUi(this);
-    server=new LocalServer();
-    server->listen(QHostAddress::Any, 1400);
+    Scene=new scene();
+    ui->graphicsView->setScene(Scene);
 }
 
-Widget::~Widget()
+widget::~widget()
 {
     delete ui;
 }
-
-void Widget::on_read_clicked()
-{
-    QByteArray data = server->socket->readAll();
-    qDebug()<<data;
-
-}
-
-
-void Widget::on_start_clicked()
-{
-
-}
-

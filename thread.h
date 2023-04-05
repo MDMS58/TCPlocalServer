@@ -4,17 +4,22 @@
 #include <QThread>
 #include "localserver.h"
 
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QPointF>
+#include <QGraphicsRectItem>
 
-#include "levelwidget.h"
+
 class MyThread : public QThread
 {
     Q_OBJECT
 
 public:
     LocalServer *server;
+    QGraphicsScene *scene ;
+    QGraphicsView *view ;
 
-    levelWidget widget;
-
+    void widget_1();
     explicit MyThread(QObject *parent = nullptr);
     ~MyThread();
 

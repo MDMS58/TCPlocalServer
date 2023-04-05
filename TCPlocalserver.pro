@@ -11,7 +11,6 @@ CONFIG += c++11
 SOURCES += \
     bulletNode.cpp \
     bulletlist.cpp \
-    levelwidget.cpp \
     localserver.cpp \
     main.cpp \
     thread.cpp
@@ -19,11 +18,11 @@ SOURCES += \
 HEADERS += \
     bulletNode.h \
     bulletlist.h \
-    levelwidget.h \
     localserver.h \
     thread.h
 
-FORMS +=
+FORMS += \
+    form.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -31,3 +30,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES +=
+
+RESOURCES += \
+    bulletFile.qrc

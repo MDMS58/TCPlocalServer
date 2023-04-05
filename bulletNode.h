@@ -5,6 +5,7 @@
 class bulletNode
 {
 public:
+
     bulletNode *nextBullet;
 
     int damage;
