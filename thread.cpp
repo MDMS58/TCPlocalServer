@@ -8,7 +8,7 @@ QGraphicsRectItem *item = new QGraphicsRectItem(0, 0, 50, 50);
 MyThread::MyThread(QObject *parent)
     : QThread(parent)
 {
-   scene = new QGraphicsScene();
+   scene = new QGraphicsScene(0,0,1000,500);
    view = new QGraphicsView(scene);
 }
 
@@ -22,7 +22,7 @@ void MyThread::widget_1(){
 
     // Crear un QGraphicsPixmapItem y establecer la imagen pixmap
     QGraphicsPixmapItem* rect = new QGraphicsPixmapItem(pixmap);
-    rect->setPos(rect->boundingRect().center() - pixmap.rect().center());
+    rect->setPos(item->pos().x()+20,0);
     rect->setScale(0.15);
 
     scene->addItem(rect);
@@ -33,18 +33,19 @@ void MyThread::widget_1(){
     QTimer *timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [=]() {
 
-        QPointF currentPos = rect->pos();
+       QPointF currentPos = rect->pos();
 
         qreal newX = currentPos.x() + 5;
         rect->setPos(newX, currentPos.y());
 
-        if (newX >= scene->width()) {
-            rect->setPos(0,item->pos().y());
+        if (newX >= 1000   ) {
+            rect->setPos(20,item->pos().y());
         }
     });
 
     timer->start(50);
-    view->setFixedSize(500,500);
+
+    view->setFixedSize(1000,500);
     view->show();
 }
 void MyThread::run()
@@ -57,6 +58,14 @@ void MyThread::run()
             // Imprimir los datos leídos
             if(data=="1"){
                 MyThread::widget_1();
+            }
+            else if (data=="S"){
+                qDebug()<<data;
+                item->setPos(item->pos().x(),item->pos().y()+10);
+            }
+            else if (data=="W"){
+                qDebug()<<data;
+                item->setPos(item->pos().x(),item->pos().y()-10);
             }
 
         });
