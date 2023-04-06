@@ -93,12 +93,14 @@ void MyThread::checkCollision(){
             for(int j=0; j<5; j++){
                 QPointF enemyPos = enemies[j]->pos();
 
-                if(enemyPos.x()-bulletPos.x()<=10 && enemyPos.x()-bulletPos.x()>=-10){
-                    if(enemyPos.x()-bulletPos.x()<=10 && enemyPos.x()-bulletPos.x()>=-10){
-                        scene->removeItem(items[i]);
+                for (int i = 0; i < num_items; i++) {
+                    for (int j = 0; j < num_items; j++) {
+                        if (items[i]->collidesWithItem(enemies[j])) {
+                            scene->removeItem(items[i]);
+                            scene->removeItem(enemies[j]);
+                        }
                     }
                 }
-
             }
         }
         /* for(int i=0; i<5; i++){
