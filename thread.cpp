@@ -92,6 +92,7 @@ void MyThread::move(){
 
         scene->addItem(rect_1);
 
+
         enemies[i]=rect_1;
 
     }
