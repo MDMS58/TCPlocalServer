@@ -21,40 +21,44 @@ void MyThread::widget_1(){
 
 
     QPixmap pixmap(":bulletFile.png");
-
-    // Crear un QGraphicsPixmapItem y establecer la imagen pixmap
-    QGraphicsPixmapItem* rect = new QGraphicsPixmapItem(pixmap);
-    rect->setPos(item->pos().x()+20,0);
-    rect->setScale(0.15);
-
-    scene->addItem(rect);
+    const int num_items = 5;
+      QGraphicsPixmapItem* items[num_items];
+      for (int i = 0; i < num_items; i++) {
+          QGraphicsPixmapItem* rect = new QGraphicsPixmapItem(pixmap);
+          rect->setPos((i+1)*100, 0);
+          rect->setScale(0.15);
+          scene->addItem(rect);
+          items[i] = rect;
+      }
     scene->addItem(item);
 
-    // Agregar el QGraphicsPixmapItem como hijo del QGraphicsRectItem
 
     QTimer *timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [=]() {
 
-       QPointF currentPos = rect->pos();
+        for (int i = 0; i < num_items; i++) {
+                    QGraphicsPixmapItem* rect = items[i];
+                    QPointF currentPos = rect->pos();
+                    qreal newz = currentPos.x() + 5;
+                    rect->setPos(newz, currentPos.y());
+                    if (newz >= 1000) {
+                        rect->setPos(20,item->pos().y());
 
-        qreal newX = currentPos.x() + 5;
-        rect->setPos(newX, currentPos.y());
+                    }
+                }
+        if (!f) {
 
-        if(!f){
-            item->setPos(item->pos().x(),item->pos().y()+10);
-
-            f=true;
+           item->moveBy(0, 20);
+           f=true;
         }
-        if(!w){
-            item->setPos(item->pos().x(),item->pos().y()-10);
+        if (!w) {
 
-            w=true;
+            item->moveBy(0, -20);
+            w = true;
         }
 
 
-        if (newX >= 1000   ) {
-            rect->setPos(20,item->pos().y());
-        }
+
     });
 
     timer->start(50);
@@ -85,6 +89,6 @@ void MyThread::run()
             }
 
         });
-        msleep(0.001);
+        msleep(0.0000001);
     }
 }
