@@ -10,7 +10,6 @@
 #include <QGraphicsRectItem>
 #include <bulletlist.h>
 
-
 class MyThread : public QThread
 {
     Q_OBJECT
@@ -20,6 +19,8 @@ public:
     QGraphicsScene *scene ;
     QGraphicsView *view ;
     QVariant condition=0;
+
+    bulletList enemiesList;
 
     bulletList list;
 
@@ -31,7 +32,7 @@ public:
     void checkCollision();
 
     explicit MyThread(QObject *parent = nullptr);
-    ~MyThread();
+
 
 signals:
     void mySignal(int value);

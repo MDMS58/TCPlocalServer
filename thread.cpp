@@ -1,4 +1,4 @@
-#include "thread.h"
+﻿#include "thread.h"
 #include "bulletNode.h"
 
 #include <QThread>
@@ -8,10 +8,9 @@
 
 
 
-const int num_items = 5;
-
-QGraphicsPixmapItem* items[num_items];
-QGraphicsPixmapItem* enemies[num_items];
+int num_items = 5;
+bool resetLoop=false;
+bool resetLoop1=false;
 
 
 MyThread::MyThread(QObject *parent)
@@ -19,19 +18,16 @@ MyThread::MyThread(QObject *parent)
 {
     scene = new QGraphicsScene(0,0,1000,500);
     view = new QGraphicsView(scene);
-    QPixmap pixma((":bulletFile.png"));
+    QPixmap pixma((":nave1.png"));
     item = new QGraphicsPixmapItem(pixma);
-}
 
-MyThread::~MyThread()
-{
 }
 
 
 void MyThread::widget_1(){
 
     item->setPos(0, 0);
-    item->setScale(0.5);
+    item->setScale(0.08);
     QPixmap pixmap(":bulletFile.png");
 
 
@@ -42,15 +38,16 @@ void MyThread::widget_1(){
         QGraphicsPixmapItem* rect = new QGraphicsPixmapItem(pixmap);
 
 
-        rect->setPos((i+1)*100, 0);
+        rect->setPos((i+1)*100, 47.5);
         rect->setScale(0.15);
         scene->addItem(rect);
 
 
         aux->item= rect;
+
         aux=aux->nextBullet;
 
-        items[i] = rect;
+
     }
     scene->addItem(item);
 
@@ -59,16 +56,25 @@ void MyThread::widget_1(){
 
     QObject::connect(timer, &QTimer::timeout, [&]() {
 
+        bulletNode *aux= list.head;
+
         for (int i = 0; i < num_items; i++) {
-            QGraphicsPixmapItem* rect = items[i];
+            QGraphicsPixmapItem* rect = aux->item;
 
             QPointF currentPos = rect->pos();
             qreal newz = currentPos.x() + 5;
             rect->setPos(newz, currentPos.y());
 
             if (newz >= 1000) {
-                rect->setPos(20,item->pos().y());
+                rect->setPos(20,item->pos().y()+47.5);
             }
+            if(resetLoop) {
+                resetLoop=false;
+                break;
+            }
+
+            if(aux->nextBullet!=nullptr)
+                aux=aux->nextBullet;
         }
 
 
@@ -87,29 +93,43 @@ void MyThread::checkCollision(){
     QTimer *timer = new QTimer();
 
     QObject::connect(timer, &QTimer::timeout, [&]() {
-        for(int i=0; i<5; i++){
 
-            QPointF bulletPos = items[i]->pos();
-            for(int j=0; j<5; j++){
-                QPointF enemyPos = enemies[j]->pos();
+        bulletNode *aux=list.head;
+        bulletNode *aux_1=enemiesList.head;
 
-                for (int i = 0; i < num_items; i++) {
-                    for (int j = 0; j < num_items; j++) {
-                        if (items[i]->collidesWithItem(enemies[j])) {
-                            scene->removeItem(items[i]);
-                            scene->removeItem(enemies[j]);
-                        }
-                    }
+        bool flag=false;
+
+        for (int i = 0; i < num_items; i++) {
+            for (int j = 0; j < num_items; j++) {
+                if (aux->item->collidesWithItem(aux_1->item)) {
+
+                    scene->removeItem(aux->item);
+                    scene->removeItem(aux_1->item);
+                    /*
+                    list.deleteNode(aux->id, true);
+                    enemiesList.deleteNode(aux_1->id, true);*/
+
+                    delete aux;
+                    delete aux_1;
+
+
+                    flag=true;
+                    resetLoop=true;
+                    resetLoop1=true;
                 }
+                if(aux_1->nextBullet!=nullptr)
+                    aux_1=aux_1->nextBullet;
+
             }
+            if(flag==true){
+                num_items--;
+                break;
+            }
+            aux_1=enemiesList.head;
+            aux=aux->nextBullet;
         }
-        /* for(int i=0; i<5; i++){
-            for(int j=0; j<5; j++){
-                if (items[i]->collidesWithItem(enemies[i])) {
-                    scene->removeItem(items[i]);
-                }
-            }
-        }*/
+
+
     }  );
     timer->start(1);
 }
@@ -118,19 +138,7 @@ void MyThread::checkCollision(){
 
 
 void MyThread::itemMove(){
-    /* class threadcito:public MyThread{
-    protected:
-        void run(){
-            while(true){
-                if(condition==1){
-                    item->moveBy(0, 20);
-                    condition=0; }
-                if(condition==2){
-                    item->moveBy(0, -20);
-                    condition=0; }
-            }
-        }
-    };*/
+
 
 
     QTimer *timer = new QTimer();
@@ -145,17 +153,17 @@ void MyThread::itemMove(){
 
     });
     timer->start(50);
-    /*threadcito t;
-    t.start();*/
 
 
 }
 
 
 void MyThread::move(){
-    QPixmap pixmap(":nave.png"); const int num_items = 5;
+    QPixmap pixmap(":nave.png");
 
+    enemiesList.insert(num_items);
 
+    bulletNode *aux= enemiesList.head;
     for (int i = 0; i < num_items; i++) {
         int numAleatorio = QRandomGenerator::global()->bounded(450);
 
@@ -166,14 +174,16 @@ void MyThread::move(){
 
         scene->addItem(rect_1);
 
-        enemies[i]=rect_1;
+        aux->item=rect_1;
+        aux=aux->nextBullet;
 
     }
     scene->addItem(item);
     QTimer *timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [=]() {
+        bulletNode *aux= enemiesList.head;
         for(int i=0; i<num_items; i++){
-            QGraphicsPixmapItem* rect_1 = enemies[i];
+            QGraphicsPixmapItem* rect_1 = aux->item;
             QPointF currentPos_1 = rect_1->pos();
             qreal newz_1 = currentPos_1.x() - 5;
             rect_1->setPos(newz_1, currentPos_1.y());
@@ -183,6 +193,12 @@ void MyThread::move(){
                 int numAleatorio = QRandomGenerator::global()->bounded(450);
                 rect_1->setPos(1000,numAleatorio);
             }
+            if(resetLoop1) {
+                resetLoop1=false;
+                break;
+            }
+            if(aux->nextBullet!=nullptr)
+                aux=aux->nextBullet;
         }
 
     });

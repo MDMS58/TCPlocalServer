@@ -33,4 +33,5 @@ DISTFILES +=
 
 RESOURCES += \
     bulletFile.qrc \
+    main.qrc \
     naveFile.qrc
