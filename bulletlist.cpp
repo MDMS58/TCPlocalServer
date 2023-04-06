@@ -27,23 +27,32 @@ void bulletList:: insert(int bulletAmount){
         bulletAmount--;
     }
 }
-void bulletList::deleteNode(int bullet_id, bool flag){
-    bulletNode *aux=head; int i=0;
-    bulletNode *auxBefore=head;;
-    while(aux!=nullptr){
-        if(i==bullet_id){
-            auxBefore->nextBullet=aux->nextBullet;
-            break;
+void bulletList::deleteNode(int bullet_id) {
+    bulletNode *aux = head;
+    bulletNode *auxBefore = nullptr;
+
+    if (head == nullptr) {
+        return;
+    }
+
+
+    if (bullet_id == 0) {
+        head = head->nextBullet;
+        delete aux;
+        return;
+    }
+
+
+    int i = 0;
+    while (aux != nullptr) {
+        if (i == bullet_id) {
+            auxBefore->nextBullet = aux->nextBullet;
+            delete aux;
+            return;
         }
         i++;
-        auxBefore=aux;
-        if(flag){
-            aux=aux->nextBullet;
-
-        }
-        else{
-            delete aux;
-        }
+        auxBefore = aux;
+        aux = aux->nextBullet;
     }
 }
 void operator delete(void* ptr){

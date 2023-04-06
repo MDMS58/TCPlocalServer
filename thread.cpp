@@ -105,9 +105,9 @@ void MyThread::checkCollision(){
 
                     scene->removeItem(aux->item);
                     scene->removeItem(aux_1->item);
-                    /*
-                    list.deleteNode(aux->id, true);
-                    enemiesList.deleteNode(aux_1->id, true);*/
+
+                    list.deleteNode(aux->id);
+                    enemiesList.deleteNode(aux_1->id);
 
                     delete aux;
                     delete aux_1;
@@ -144,10 +144,16 @@ void MyThread::itemMove(){
     QTimer *timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [=]() {
         if(condition==1){
-            item->moveBy(0, 20);
+            if(item->pos().y()<370){
+                item->moveBy(0, 20);
+            }
+
             condition=0; }
         if(condition==2){
-            item->moveBy(0, -20);
+            if(item->pos().y()>10){
+                item->moveBy(0, -20);
+            }
+
             condition=0; }
 
 
@@ -165,7 +171,7 @@ void MyThread::move(){
 
     bulletNode *aux= enemiesList.head;
     for (int i = 0; i < num_items; i++) {
-        int numAleatorio = QRandomGenerator::global()->bounded(450);
+        int numAleatorio = QRandomGenerator::global()->bounded(414);
 
         QGraphicsPixmapItem* rect_1 = new QGraphicsPixmapItem(pixmap);
 
@@ -189,8 +195,8 @@ void MyThread::move(){
             rect_1->setPos(newz_1, currentPos_1.y());
 
 
-            if (newz_1 <= 000) {
-                int numAleatorio = QRandomGenerator::global()->bounded(450);
+            if (newz_1 <= 0) {
+                int numAleatorio = QRandomGenerator::global()->bounded(420);
                 rect_1->setPos(1000,numAleatorio);
             }
             if(resetLoop1) {

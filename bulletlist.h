@@ -11,7 +11,7 @@ public:
 
     void insert(int bulletAmount);
     void show();
-    void deleteNode(int bullet_id, bool flag);
+    void deleteNode(int bullet_id);
 
     void operator delete(void* ptr); //Autores: Michael Marcia e Isaac Solis, Marco no, porque no hizo una basura
 
