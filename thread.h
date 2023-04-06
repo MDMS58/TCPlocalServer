@@ -22,6 +22,8 @@ public:
 
     bulletList list;
 
+    QGraphicsPixmapItem* item ;
+
     void move();
     void widget_1();
 

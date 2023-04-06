@@ -3,18 +3,24 @@
 
 #include <QThread>
 #include <QTimer>
+#include <QRandomGenerator>
 
 
 
-QGraphicsRectItem *item = new QGraphicsRectItem(0, 0, 50, 50);
+
+
 bool f = true;
 bool w = true;
+
+
 
 MyThread::MyThread(QObject *parent)
     : QThread(parent)
 {
     scene = new QGraphicsScene(0,0,1000,500);
     view = new QGraphicsView(scene);
+     QPixmap pixma((":bulletFile.png"));
+     item = new QGraphicsPixmapItem(pixma);
 }
 
 MyThread::~MyThread()
@@ -22,11 +28,12 @@ MyThread::~MyThread()
 }
 void MyThread::widget_1(){
 
-
+    item->setPos(0, 0);
+    item->setScale(0.5);
     QPixmap pixmap(":bulletFile.png"); const int num_items = 5;
 
     QGraphicsPixmapItem* items[num_items];
-    QGraphicsPixmapItem* enemies[num_items];
+
 
 
 
@@ -83,11 +90,11 @@ void MyThread::move(){
 
 
     for (int i = 0; i < num_items; i++) {
-
+        int numAleatorio = QRandomGenerator::global()->bounded(450);
 
         QGraphicsPixmapItem* rect_1 = new QGraphicsPixmapItem(pixmap);
 
-        rect_1->setPos(1000-i*100, 0);
+        rect_1->setPos(1000-i*100, numAleatorio);
         rect_1->setScale(0.15);
 
         scene->addItem(rect_1);
@@ -109,7 +116,8 @@ void MyThread::move(){
 
 
             if (newz_1 <= 000) {
-                rect_1->setPos(1000,item->pos().y());
+                int numAleatorio = QRandomGenerator::global()->bounded(450);
+                rect_1->setPos(1000,numAleatorio);
             }
         }
 
