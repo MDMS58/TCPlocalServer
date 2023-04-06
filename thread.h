@@ -19,13 +19,16 @@ public:
     LocalServer *server;
     QGraphicsScene *scene ;
     QGraphicsView *view ;
+    QVariant condition=0;
 
     bulletList list;
 
     QGraphicsPixmapItem* item ;
 
     void move();
+    void itemMove();
     void widget_1();
+    void checkCollision();
 
     explicit MyThread(QObject *parent = nullptr);
     ~MyThread();

@@ -8,10 +8,10 @@
 
 
 
+const int num_items = 5;
 
-bool f = true;
-bool w = true;
-
+QGraphicsPixmapItem* items[num_items];
+QGraphicsPixmapItem* enemies[num_items];
 
 
 MyThread::MyThread(QObject *parent)
@@ -19,22 +19,20 @@ MyThread::MyThread(QObject *parent)
 {
     scene = new QGraphicsScene(0,0,1000,500);
     view = new QGraphicsView(scene);
-     QPixmap pixma((":bulletFile.png"));
-     item = new QGraphicsPixmapItem(pixma);
+    QPixmap pixma((":bulletFile.png"));
+    item = new QGraphicsPixmapItem(pixma);
 }
 
 MyThread::~MyThread()
 {
 }
+
+
 void MyThread::widget_1(){
 
     item->setPos(0, 0);
     item->setScale(0.5);
-    QPixmap pixmap(":bulletFile.png"); const int num_items = 5;
-
-    QGraphicsPixmapItem* items[num_items];
-
-
+    QPixmap pixmap(":bulletFile.png");
 
 
     list.insert(num_items);
@@ -58,14 +56,15 @@ void MyThread::widget_1(){
 
 
     QTimer *timer = new QTimer();
-    QObject::connect(timer, &QTimer::timeout, [=]() {
+
+    QObject::connect(timer, &QTimer::timeout, [&]() {
 
         for (int i = 0; i < num_items; i++) {
             QGraphicsPixmapItem* rect = items[i];
+
             QPointF currentPos = rect->pos();
             qreal newz = currentPos.x() + 5;
             rect->setPos(newz, currentPos.y());
-
 
             if (newz >= 1000) {
                 rect->setPos(20,item->pos().y());
@@ -82,11 +81,65 @@ void MyThread::widget_1(){
     view->setFixedSize(1000,500);
     view->show();
 }
+
+
+void MyThread::checkCollision(){
+    QTimer *timer = new QTimer();
+
+    QObject::connect(timer, &QTimer::timeout, [&]() {
+        for(int i=0; i<5; i++){
+            QPointF bulletPos = items[i]->pos();
+            for(int j=0; j<5; j++){
+                 QPointF enemyPos = enemies[j]->pos();
+
+                 if(enemyPos.x()-bulletPos.x()<=10)
+                     qDebug()<<enemyPos.x()-bulletPos.x();
+            }
+        }
+    }  );
+    timer->start(100);
+}
+
+
+
+
+void MyThread::itemMove(){
+   /* class threadcito:public MyThread{
+    protected:
+        void run(){
+            while(true){
+                if(condition==1){
+                    item->moveBy(0, 20);
+                    condition=0; }
+                if(condition==2){
+                    item->moveBy(0, -20);
+                    condition=0; }
+            }
+        }
+    };*/
+
+
+    QTimer *timer = new QTimer();
+    QObject::connect(timer, &QTimer::timeout, [=]() {
+        if(condition==1){
+            item->moveBy(0, 20);
+            condition=0; }
+        if(condition==2){
+            item->moveBy(0, -20);
+            condition=0; }
+
+
+    });
+    timer->start(50);
+    /*threadcito t;
+    t.start();*/
+
+
+}
+
+
 void MyThread::move(){
     QPixmap pixmap(":nave.png"); const int num_items = 5;
-
-    QGraphicsPixmapItem* enemies[num_items];
-
 
 
     for (int i = 0; i < num_items; i++) {
@@ -99,13 +152,10 @@ void MyThread::move(){
 
         scene->addItem(rect_1);
 
-
         enemies[i]=rect_1;
 
     }
     scene->addItem(item);
-
-
     QTimer *timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [=]() {
         for(int i=0; i<num_items; i++){
@@ -126,29 +176,32 @@ void MyThread::move(){
     timer->start(50);
 }
 
+
 void MyThread::run()
 {
     bool flag=false;
 
     while (flag==false) {
         QObject::connect(server->socket, &QTcpSocket::readyRead, [&]() {
-            // Leer los datos del socket
+
             QByteArray data = server->socket->readAll();
-            // Imprimir los datos leídos
+
             if(data=="1"){
                 MyThread::widget_1();
                 MyThread::move();
+                MyThread::itemMove();
+                MyThread::checkCollision();
             }
             else if (data=="S"){
-                item->moveBy(0, 20);
+                condition=1;
             }
             else if (data=="W"){
-                item->moveBy(0, -20);
+                condition=2;
 
 
             }
 
         });
-        msleep(0.0000001);
+        msleep(100);
     }
 }
