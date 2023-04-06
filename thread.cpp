@@ -9,6 +9,7 @@
 
 
 int num_items = 5;
+int num_enemies=5;
 bool resetLoop=false;
 bool resetLoop1=false;
 
@@ -100,7 +101,7 @@ void MyThread::checkCollision(){
         bool flag=false;
 
         for (int i = 0; i < num_items; i++) {
-            for (int j = 0; j < num_items; j++) {
+            for (int j = 0; j < num_enemies; j++) {
                 if (aux->item->collidesWithItem(aux_1->item)) {
 
                     scene->removeItem(aux->item);
@@ -123,10 +124,54 @@ void MyThread::checkCollision(){
             }
             if(flag==true){
                 num_items--;
+                num_enemies--;
                 break;
             }
             aux_1=enemiesList.head;
             aux=aux->nextBullet;
+        }
+
+
+    }  );
+    timer->start(1);
+}
+
+void MyThread::PlayerCollision()
+{
+    QTimer *timer = new QTimer();
+
+    QObject::connect(timer, &QTimer::timeout, [&]() {
+
+
+        bulletNode *aux_1=enemiesList.head;
+
+        bool flag=false;
+
+        for (int i = 0; i < num_items; i++) {
+            if (item->collidesWithItem(aux_1->item)) {
+
+
+                scene->removeItem(aux_1->item);
+
+                enemiesList.deleteNode(aux_1->id);
+
+
+                delete aux_1;
+
+
+                flag=true;
+                resetLoop=true;
+                resetLoop1=true;
+            }
+            if(aux_1->nextBullet!=nullptr)
+                aux_1=aux_1->nextBullet;
+
+            if(flag==true){
+                 num_enemies--;
+                break;
+            }
+            aux_1=enemiesList.head;
+
         }
 
 
@@ -167,7 +212,7 @@ void MyThread::itemMove(){
 void MyThread::move(){
     QPixmap pixmap(":nave.png");
 
-    enemiesList.insert(num_items);
+    enemiesList.insert(num_enemies);
 
     bulletNode *aux= enemiesList.head;
     for (int i = 0; i < num_items; i++) {

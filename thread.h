@@ -30,6 +30,7 @@ public:
     void itemMove();
     void widget_1();
     void checkCollision();
+    void PlayerCollision();
 
     explicit MyThread(QObject *parent = nullptr);
 
