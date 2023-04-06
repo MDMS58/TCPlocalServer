@@ -8,6 +8,7 @@
 #include <QGraphicsView>
 #include <QPointF>
 #include <QGraphicsRectItem>
+#include <bulletlist.h>
 
 
 class MyThread : public QThread
@@ -19,7 +20,11 @@ public:
     QGraphicsScene *scene ;
     QGraphicsView *view ;
 
+    bulletList list;
+
+    void move();
     void widget_1();
+
     explicit MyThread(QObject *parent = nullptr);
     ~MyThread();
 
