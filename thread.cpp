@@ -88,23 +88,35 @@ void MyThread::checkCollision(){
 
     QObject::connect(timer, &QTimer::timeout, [&]() {
         for(int i=0; i<5; i++){
+
             QPointF bulletPos = items[i]->pos();
             for(int j=0; j<5; j++){
-                 QPointF enemyPos = enemies[j]->pos();
+                QPointF enemyPos = enemies[j]->pos();
 
-                 if(enemyPos.x()-bulletPos.x()<=10)
-                     qDebug()<<enemyPos.x()-bulletPos.x();
+                if(enemyPos.x()-bulletPos.x()<=10 && enemyPos.x()-bulletPos.x()>=-10){
+                    if(enemyPos.x()-bulletPos.x()<=10 && enemyPos.x()-bulletPos.x()>=-10){
+                        scene->removeItem(items[i]);
+                    }
+                }
+
             }
         }
+        /* for(int i=0; i<5; i++){
+            for(int j=0; j<5; j++){
+                if (items[i]->collidesWithItem(enemies[i])) {
+                    scene->removeItem(items[i]);
+                }
+            }
+        }*/
     }  );
-    timer->start(100);
+    timer->start(1);
 }
 
 
 
 
 void MyThread::itemMove(){
-   /* class threadcito:public MyThread{
+    /* class threadcito:public MyThread{
     protected:
         void run(){
             while(true){
