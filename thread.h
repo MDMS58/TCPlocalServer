@@ -31,6 +31,7 @@ public:
     void widget_1();
     void checkCollision();
     void PlayerCollision();
+    void pause();
 
     explicit MyThread(QObject *parent = nullptr);
 
