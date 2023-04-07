@@ -30,25 +30,27 @@ void bulletList:: insert(int bulletAmount){
 void bulletList::deleteNode(int bullet_id) {
     bulletNode *aux = head;
     bulletNode *auxBefore = nullptr;
+    bool flag=true;
 
     if (head == nullptr) {
-        return;
+        flag=false;
     }
 
 
-    if (bullet_id == head->id) {
+    else if (bullet_id == head->id) {
         head = head->nextBullet;
-        delete aux;
-        return;
-    }
 
+
+    }
 
     int i = 0;
-    while (aux != nullptr) {
+    while (flag && aux != nullptr) {
         if (i == bullet_id) {
+
+            qDebug()<<"bienn";
             auxBefore->nextBullet = aux->nextBullet;
-            delete aux;
-            return;
+
+            break;
         }
         i++;
         auxBefore = aux;

@@ -38,4 +38,8 @@ int main(int argc, char *argv[])
     serverManager *manager= new serverManager();
      manager->waitConnection();
     return a.exec();
+
+
+
+
 }

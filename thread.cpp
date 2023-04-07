@@ -48,8 +48,7 @@ void MyThread::pause(){
 
             // se actualiza la lista
 
-            list.deleteNode(itemId);
-            enemiesList.deleteNode(enemyId);
+
 
 
             //actualizar banderas
@@ -62,7 +61,7 @@ void MyThread::pause(){
 
         }
     });
-    timer->start(50);
+    timer->start(10);
 }
 
 void MyThread::widget_1(){
@@ -85,21 +84,17 @@ void MyThread::widget_1(){
 
 
         aux->item= rect;
-
         aux=aux->nextBullet;
 
 
     }
     scene->addItem(item);
 
-
-
-
     QObject::connect(timer, &QTimer::timeout, [&]() {
 
         bulletNode *aux= list.head;
         if(!booleansControler){
-            for (int i = 0; i < num_items; i++) {
+            while(aux!=nullptr) {
                 QGraphicsPixmapItem* rect = aux->item;
                 if(aux->item->pos().x()>0){
                     QPointF currentPos = rect->pos();
@@ -110,10 +105,7 @@ void MyThread::widget_1(){
                         rect->setPos(20,item->pos().y()+47.5);
                     }
                 }
-                if(aux->nextBullet!=nullptr)
-                    aux=aux->nextBullet;
-                flag=true;
-
+                aux=aux->nextBullet;
             }
         }
         else{
@@ -137,20 +129,22 @@ void MyThread::checkCollision(){
         bulletNode *aux_1=enemiesList.head;
 
         if(!booleansControler){
-            for (int i = 0; i < num_items; i++) {
-                for (int j = 0; j < num_enemies; j++) {
+            while(aux!=nullptr) {
+                while(aux_1!=nullptr) {
                     if (aux->item->collidesWithItem(aux_1->item)) {
 
                         aux_1->item->setPos(-100, 50);
                         aux->item->setPos(-100, 10);
+
+                        scene->removeItem(aux->item);
+                        scene->removeItem(aux_1->item);
 
                         itemId=(aux_1->id);
                         enemyId=(aux->id);
 
                         booleansControler=true;
                     }
-                    if(aux_1->nextBullet!=nullptr)
-                        aux_1=aux_1->nextBullet;
+                    aux_1=aux_1->nextBullet;
                 }
 
                 aux_1=enemiesList.head;
@@ -248,7 +242,7 @@ void MyThread::move(){
     QObject::connect(timer4, &QTimer::timeout, [=]() {
         bulletNode *aux= enemiesList.head;
         if(!booleansControler){
-            for(int i=0; i<num_enemies; i++){
+            while(aux!=nullptr){
                 QGraphicsPixmapItem* rect_1 = aux->item;
                 if(aux->item->pos().x()>0){
                     QPointF currentPos_1 = rect_1->pos();
@@ -271,7 +265,7 @@ void MyThread::move(){
     });
 
 
-    timer4->start(25);
+    timer4->start(50);
 }
 
 void MyThread::run()
@@ -282,8 +276,6 @@ void MyThread::run()
         QObject::connect(server->socket, &QTcpSocket::readyRead, [&]() {
 
             QByteArray data = server->socket->readAll();
-
-            qDebug()<<flag << " "<< flag1 << "  "<<flag2;
 
             if(data=="1"){
                 MyThread::widget_1();
