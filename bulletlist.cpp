@@ -45,8 +45,6 @@ void bulletList::deleteNode(int bullet_id) {
     int i = 0;
     while (flag && aux != nullptr) {
         if (i == bullet_id) {
-
-            qDebug()<<"bienn";
             auxBefore->nextBullet = aux->nextBullet;
 
             break;

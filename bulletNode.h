@@ -8,6 +8,7 @@ public:
     QGraphicsPixmapItem *item;
     bulletNode *nextBullet;
 
+    int health;
     int damage;
     int id;
     bulletNode();

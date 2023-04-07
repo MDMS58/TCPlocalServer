@@ -11,7 +11,7 @@
 int itemId;
 int enemyId;
 
-int num_items = 5;
+int num_items = 20;
 int num_enemies=5;
 
 QTimer *timer = new QTimer();
@@ -27,10 +27,6 @@ bool flag2=false;
 bool flag3=false;
 
 
-
-
-
-
 MyThread::MyThread(QObject *parent)
     : QThread(parent)
 {
@@ -44,20 +40,7 @@ MyThread::MyThread(QObject *parent)
 void MyThread::pause(){
     QTimer *timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [=]() {
-        if( flag==true  && flag2==true ){
-
-            // se actualiza la lista
-
-            list.deleteNode(itemId);
-            enemiesList.deleteNode(enemyId);
-
-
-            //actualizar banderas
-            flag=false;
-            flag2=false;
-
-            //se reinicia
-            booleansControler=false;
+        if( flag==true  && flag2==true && booleansControler==true){
 
 
         }
@@ -79,10 +62,9 @@ void MyThread::widget_1(){
         QGraphicsPixmapItem* rect = new QGraphicsPixmapItem(pixmap);
 
 
-        rect->setPos((i+1)*100, 47.5);
+        rect->setPos(-1100+(i+1)*55, 47.5);
         rect->setScale(0.15);
         scene->addItem(rect);
-
 
         aux->item= rect;
         aux=aux->nextBullet;
@@ -93,26 +75,24 @@ void MyThread::widget_1(){
 
     QObject::connect(timer, &QTimer::timeout, [&]() {
 
-        if(!booleansControler){
+        bulletNode *aux= list.head;
+        while(aux!=nullptr) {
+            QGraphicsPixmapItem* rect = aux->item;
+            if(aux->item->pos().x()>-1201){
+                QPointF currentPos = rect->pos();
+                qreal newz = currentPos.x() + 5;
+                rect->setPos(newz, currentPos.y());
 
-            bulletNode *aux= list.head;
-            while(aux!=nullptr) {
-                QGraphicsPixmapItem* rect = aux->item;
-                if(aux->item->pos().x()>0){
-                    QPointF currentPos = rect->pos();
-                    qreal newz = currentPos.x() + 5;
-                    rect->setPos(newz, currentPos.y());
-
-                    if (newz >= 1000) {
-                        rect->setPos(20,item->pos().y()+47.5);
-                    }
+                if (newz >= 1000) {
+                    rect->setPos(20,item->pos().y()+47.5);
                 }
-                aux=aux->nextBullet;
+                if (newz < 000) {
+                    rect->setPos(newz,item->pos().y()+47.5);
+                }
             }
+            aux=aux->nextBullet;
         }
-        else{
-            flag=true;
-        }
+
 
     });
 
@@ -126,18 +106,14 @@ void MyThread::checkCollision(){
 
 
     QObject::connect(timer1, &QTimer::timeout, [&]() {
-
-
-
-        if(!booleansControler){
             bulletNode *aux=list.head;
             bulletNode *aux_1=enemiesList.head;
             while(aux!=nullptr) {
                 while(aux_1!=nullptr) {
                     if (aux->item->collidesWithItem(aux_1->item)) {
 
-                        aux_1->item->setPos(-100, 50);
-                        aux->item->setPos(-100, 10);
+                        aux_1->item->setPos(-1300, 50);
+                        aux->item->setPos(-1300, 10);
 
                         scene->removeItem(aux->item);
                         scene->removeItem(aux_1->item);
@@ -146,6 +122,7 @@ void MyThread::checkCollision(){
                         enemyId=(aux->id);
 
                         booleansControler=true;
+
                     }
                     aux_1=aux_1->nextBullet;
                 }
@@ -156,7 +133,7 @@ void MyThread::checkCollision(){
         }
 
 
-    }  );
+     );
     timer1->start(50);
 }
 
@@ -168,7 +145,7 @@ void MyThread::PlayerCollision()
 
 
         bulletNode *aux_1=enemiesList.head;
-        if(!booleansControler){
+
 
             for (int i = 0; i < num_enemies; i++) {
                 if (item->collidesWithItem(aux_1->item)) {
@@ -186,11 +163,8 @@ void MyThread::PlayerCollision()
 
             aux_1=aux_1->nextBullet;
         }
-        else{
-            flag1=true;
-        }
 
-    }  );
+      );
     timer2->start(50);
 }
 
@@ -243,12 +217,10 @@ void MyThread::move(){
 
 
     QObject::connect(timer4, &QTimer::timeout, [=]() {
-
-        if(!booleansControler){
-            bulletNode *aux= enemiesList.head;
+          bulletNode *aux= enemiesList.head;
             while(aux!=nullptr){
                 QGraphicsPixmapItem* rect_1 = aux->item;
-                if(aux->item->pos().x()>0){
+                if(aux->item->pos().x()>-1201){
                     QPointF currentPos_1 = rect_1->pos();
                     qreal newz_1 = currentPos_1.x() - 5;
                     rect_1->setPos(newz_1, currentPos_1.y());
@@ -263,10 +235,7 @@ void MyThread::move(){
                 aux=aux->nextBullet;
             }
         }
-        else{
-            flag2=true;
-        }
-    });
+     );
 
 
     timer4->start(50);
