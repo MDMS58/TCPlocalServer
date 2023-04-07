@@ -100,11 +100,10 @@ void MyThread::checkCollision(){
             for (int j = 0; j < num_enemies; j++) {
                 if (aux->item->collidesWithItem(aux_1->item)) {
 
-                    scene->removeItem(aux->item);
-                    scene->removeItem(aux_1->item);
 
-                    aux_1->item->setPos(-10, 50);
-                    aux->item->setPos(-10, 10);
+
+                    aux_1->item->setPos(-100, 50);
+                    aux->item->setPos(-100, 10);
                 }
                 if(aux_1->nextBullet!=nullptr)
                     aux_1=aux_1->nextBullet;
@@ -132,10 +131,8 @@ void MyThread::PlayerCollision()
         for (int i = 0; i < num_enemies; i++) {
             if (item->collidesWithItem(aux_1->item)) {
 
-                scene->removeItem(aux_1->item);
 
-                enemiesList.deleteNode(aux_1->id);
-
+                aux_1->item->setPos(-10, 50);
 
 
             }
