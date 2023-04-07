@@ -5,7 +5,11 @@
 class nodeid
 {
 public:
-    nodeid();
+   nodeid *next;
+
+
+    int id;
+    nodeid(int id);
 };
 
 #endif // NODEID_H

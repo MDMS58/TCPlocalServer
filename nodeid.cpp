@@ -1,6 +1,7 @@
 #include "nodeid.h"
 
-nodeid::nodeid()
+nodeid::nodeid(int id)
 {
-
+    this->id = id;
+    next=nullptr;
 }

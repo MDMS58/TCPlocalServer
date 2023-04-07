@@ -5,8 +5,11 @@
 #include <QTimer>
 #include <QRandomGenerator>
 
+#include "listid.h"
 
 
+int itemId;
+int enemyId;
 
 int num_items = 5;
 int num_enemies=5;
@@ -21,6 +24,9 @@ bool booleansControler=false;
 bool flag=false;
 bool flag1=false;
 bool flag2=false;
+bool flag3=false;
+
+
 
 
 
@@ -38,9 +44,13 @@ MyThread::MyThread(QObject *parent)
 void MyThread::pause(){
     QTimer *timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [=]() {
-        if(flag==true  && flag2==true){
+        if( flag==true  && flag2==true ){
 
             // se actualiza la lista
+
+            list.deleteNode(itemId);
+            enemiesList.deleteNode(enemyId);
+
 
             //actualizar banderas
             flag=false;
@@ -54,6 +64,7 @@ void MyThread::pause(){
     });
     timer->start(50);
 }
+
 void MyThread::widget_1(){
 
     item->setPos(0, 0);
@@ -117,7 +128,6 @@ void MyThread::widget_1(){
     view->show();
 }
 
-
 void MyThread::checkCollision(){
 
 
@@ -133,6 +143,9 @@ void MyThread::checkCollision(){
 
                         aux_1->item->setPos(-100, 50);
                         aux->item->setPos(-100, 10);
+
+                        itemId=(aux_1->id);
+                        enemyId=(aux->id);
 
                         booleansControler=true;
                     }
@@ -184,7 +197,6 @@ void MyThread::PlayerCollision()
     timer2->start(50);
 }
 
-
 void MyThread::itemMove(){
 
 
@@ -210,14 +222,13 @@ void MyThread::itemMove(){
 
 }
 
-
 void MyThread::move(){
     QPixmap pixmap(":nave.png");
 
     enemiesList.insert(num_enemies);
 
     bulletNode *aux= enemiesList.head;
-    for (int i = 0; i < num_items; i++) {
+    for (int i = 0; i < num_enemies; i++) {
         int numAleatorio = QRandomGenerator::global()->bounded(414);
 
         QGraphicsPixmapItem* rect_1 = new QGraphicsPixmapItem(pixmap);
@@ -238,7 +249,7 @@ void MyThread::move(){
         bulletNode *aux= enemiesList.head;
         if(!booleansControler){
             for(int i=0; i<num_enemies; i++){
-                QGraphicsPixmapItem* rect_1 = aux->item;\
+                QGraphicsPixmapItem* rect_1 = aux->item;
                 if(aux->item->pos().x()>0){
                     QPointF currentPos_1 = rect_1->pos();
                     qreal newz_1 = currentPos_1.x() - 5;
@@ -259,9 +270,9 @@ void MyThread::move(){
         }
     });
 
+
     timer4->start(25);
 }
-
 
 void MyThread::run()
 {
@@ -271,6 +282,7 @@ void MyThread::run()
         QObject::connect(server->socket, &QTcpSocket::readyRead, [&]() {
 
             QByteArray data = server->socket->readAll();
+
             qDebug()<<flag << " "<< flag1 << "  "<<flag2;
 
             if(data=="1"){

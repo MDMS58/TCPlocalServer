@@ -56,7 +56,7 @@ void bulletList::deleteNode(int bullet_id) {
     }
 }
 void operator delete(void* ptr){
-
+    free(ptr);
 }
 void bulletList:: show(){
     bulletNode *aux=head;
