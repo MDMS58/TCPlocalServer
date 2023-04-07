@@ -48,7 +48,8 @@ void MyThread::pause(){
 
             // se actualiza la lista
 
-
+            list.deleteNode(itemId);
+            enemiesList.deleteNode(enemyId);
 
 
             //actualizar banderas
@@ -92,8 +93,9 @@ void MyThread::widget_1(){
 
     QObject::connect(timer, &QTimer::timeout, [&]() {
 
-        bulletNode *aux= list.head;
         if(!booleansControler){
+
+            bulletNode *aux= list.head;
             while(aux!=nullptr) {
                 QGraphicsPixmapItem* rect = aux->item;
                 if(aux->item->pos().x()>0){
@@ -125,10 +127,11 @@ void MyThread::checkCollision(){
 
     QObject::connect(timer1, &QTimer::timeout, [&]() {
 
-        bulletNode *aux=list.head;
-        bulletNode *aux_1=enemiesList.head;
+
 
         if(!booleansControler){
+            bulletNode *aux=list.head;
+            bulletNode *aux_1=enemiesList.head;
             while(aux!=nullptr) {
                 while(aux_1!=nullptr) {
                     if (aux->item->collidesWithItem(aux_1->item)) {
@@ -240,8 +243,9 @@ void MyThread::move(){
 
 
     QObject::connect(timer4, &QTimer::timeout, [=]() {
-        bulletNode *aux= enemiesList.head;
+
         if(!booleansControler){
+            bulletNode *aux= enemiesList.head;
             while(aux!=nullptr){
                 QGraphicsPixmapItem* rect_1 = aux->item;
                 if(aux->item->pos().x()>0){

@@ -38,9 +38,8 @@ void bulletList::deleteNode(int bullet_id) {
 
 
     else if (bullet_id == head->id) {
-        head = head->nextBullet;
-
-
+        if(head->nextBullet!=nullptr)
+            head = head->nextBullet;
     }
 
     int i = 0;
