@@ -36,7 +36,7 @@ void bulletList::deleteNode(int bullet_id) {
     }
 
 
-    if (bullet_id == 0) {
+    if (bullet_id == head->id) {
         head = head->nextBullet;
         delete aux;
         return;

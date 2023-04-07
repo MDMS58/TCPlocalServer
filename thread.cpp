@@ -12,6 +12,8 @@ int num_items = 5;
 int num_enemies=5;
 bool resetLoop=false;
 bool resetLoop1=false;
+bool resetLoop2=false;
+bool resetLoop3=false;
 
 
 MyThread::MyThread(QObject *parent)
@@ -61,24 +63,19 @@ void MyThread::widget_1(){
 
         for (int i = 0; i < num_items; i++) {
             QGraphicsPixmapItem* rect = aux->item;
+            if(aux->item->pos().x()>0){
+                QPointF currentPos = rect->pos();
+                qreal newz = currentPos.x() + 5;
+                rect->setPos(newz, currentPos.y());
 
-            QPointF currentPos = rect->pos();
-            qreal newz = currentPos.x() + 5;
-            rect->setPos(newz, currentPos.y());
-
-            if (newz >= 1000) {
-                rect->setPos(20,item->pos().y()+47.5);
+                if (newz >= 1000) {
+                    rect->setPos(20,item->pos().y()+47.5);
+                }
             }
-            if(resetLoop) {
-                resetLoop=false;
-                break;
-            }
-
             if(aux->nextBullet!=nullptr)
                 aux=aux->nextBullet;
+
         }
-
-
 
 
     });
@@ -98,7 +95,6 @@ void MyThread::checkCollision(){
         bulletNode *aux=list.head;
         bulletNode *aux_1=enemiesList.head;
 
-        bool flag=false;
 
         for (int i = 0; i < num_items; i++) {
             for (int j = 0; j < num_enemies; j++) {
@@ -107,33 +103,20 @@ void MyThread::checkCollision(){
                     scene->removeItem(aux->item);
                     scene->removeItem(aux_1->item);
 
-                    list.deleteNode(aux->id);
-                    enemiesList.deleteNode(aux_1->id);
-
-                    delete aux;
-                    delete aux_1;
-
-
-                    flag=true;
-                    resetLoop=true;
-                    resetLoop1=true;
+                    aux_1->item->setPos(-10, 50);
+                    aux->item->setPos(-10, 10);
                 }
                 if(aux_1->nextBullet!=nullptr)
                     aux_1=aux_1->nextBullet;
+            }
 
-            }
-            if(flag==true){
-                num_items--;
-                num_enemies--;
-                break;
-            }
             aux_1=enemiesList.head;
             aux=aux->nextBullet;
         }
 
 
     }  );
-    timer->start(1);
+    timer->start(50);
 }
 
 void MyThread::PlayerCollision()
@@ -145,38 +128,25 @@ void MyThread::PlayerCollision()
 
         bulletNode *aux_1=enemiesList.head;
 
-        bool flag=false;
 
-        for (int i = 0; i < num_items; i++) {
+        for (int i = 0; i < num_enemies; i++) {
             if (item->collidesWithItem(aux_1->item)) {
-
 
                 scene->removeItem(aux_1->item);
 
                 enemiesList.deleteNode(aux_1->id);
 
 
-                delete aux_1;
 
-
-                flag=true;
-                resetLoop=true;
-                resetLoop1=true;
             }
             if(aux_1->nextBullet!=nullptr)
                 aux_1=aux_1->nextBullet;
 
-            if(flag==true){
-                 num_enemies--;
-                break;
-            }
-            aux_1=enemiesList.head;
-
         }
-
+        aux_1=aux_1->nextBullet;
 
     }  );
-    timer->start(1);
+    timer->start(50);
 }
 
 
@@ -233,25 +203,22 @@ void MyThread::move(){
     QTimer *timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [=]() {
         bulletNode *aux= enemiesList.head;
-        for(int i=0; i<num_items; i++){
-            QGraphicsPixmapItem* rect_1 = aux->item;
-            QPointF currentPos_1 = rect_1->pos();
-            qreal newz_1 = currentPos_1.x() - 5;
-            rect_1->setPos(newz_1, currentPos_1.y());
+        for(int i=0; i<num_enemies; i++){
+            QGraphicsPixmapItem* rect_1 = aux->item;\
+            if(aux->item->pos().x()>0){
+                QPointF currentPos_1 = rect_1->pos();
+                qreal newz_1 = currentPos_1.x() - 5;
+                rect_1->setPos(newz_1, currentPos_1.y());
 
 
-            if (newz_1 <= 0) {
-                int numAleatorio = QRandomGenerator::global()->bounded(420);
-                rect_1->setPos(1000,numAleatorio);
+                if (newz_1 <= 0) {
+                    int numAleatorio = QRandomGenerator::global()->bounded(420);
+                    rect_1->setPos(1000,numAleatorio);
+                }
+
             }
-            if(resetLoop1) {
-                resetLoop1=false;
-                break;
-            }
-            if(aux->nextBullet!=nullptr)
-                aux=aux->nextBullet;
+            aux=aux->nextBullet;
         }
-
     });
 
     timer->start(50);
