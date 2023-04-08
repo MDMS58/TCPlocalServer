@@ -28,6 +28,7 @@ bool flag=false;
 bool flag1=false;
 bool flag2=false;
 bool flag3=false;
+bool x=false;
 
 
 MyThread::MyThread(QObject *parent)
@@ -226,7 +227,14 @@ void MyThread::move(){
 
         rect_1->setPos(1500-i*50, numAleatorio);
         rect_1->setScale(0.15);
+        qreal randomNum = QRandomGenerator::global()->generateDouble();
+        if (randomNum < 0.5) {
 
+            rect_1->setData(1, true);
+        } else {
+
+            rect_1->setData(1, false);
+        }
         scene->addItem(rect_1);
 
         aux->item=rect_1;
@@ -241,10 +249,23 @@ void MyThread::move(){
         int Counter=0;
         while(aux!=nullptr){
             QGraphicsPixmapItem* rect_1 = aux->item;
+             bool moveY= rect_1->data(1).toBool();
             if(aux->item->pos().x()>-2999){
                 QPointF currentPos_1 = rect_1->pos();
                 qreal newz_1 = currentPos_1.x() - 5;
-                rect_1->setPos(newz_1, currentPos_1.y());
+                if(moveY){
+                    rect_1->setPos(newz_1, currentPos_1.y());
+                }else{
+                    if(rect_1->pos().y()>10){
+                        rect_1->setPos(newz_1, currentPos_1.y()-1);
+                    }else{
+                        rect_1->setPos(newz_1, currentPos_1.y());
+                    }
+
+
+                }
+
+
 
 
                 if (newz_1 <= 0) {
