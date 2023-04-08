@@ -221,7 +221,7 @@ void MyThread::move(){
 
     bulletNode *aux= enemiesList.head;
     for (int i = 0; i < num_enemies; i++) {
-        int numAleatorio = QRandomGenerator::global()->bounded(414);
+        int numAleatorio = QRandomGenerator::global()->bounded(370);
 
         QGraphicsPixmapItem* rect_1 = new QGraphicsPixmapItem(pixmap);
 
@@ -234,7 +234,16 @@ void MyThread::move(){
         } else {
 
             rect_1->setData(1, false);
+
         }
+        qreal randomDireccion = QRandomGenerator::global()->generateDouble() * 0.5 + 0.5;
+        if (randomDireccion>0.75){
+            rect_1->setData(2, true);
+        }else{
+            rect_1->setData(2, false);
+        }
+
+
         scene->addItem(rect_1);
 
         aux->item=rect_1;
@@ -250,14 +259,20 @@ void MyThread::move(){
         while(aux!=nullptr){
             QGraphicsPixmapItem* rect_1 = aux->item;
              bool moveY= rect_1->data(1).toBool();
+             bool UP= rect_1->data(2).toBool();
             if(aux->item->pos().x()>-2999){
                 QPointF currentPos_1 = rect_1->pos();
-                qreal newz_1 = currentPos_1.x() - 5;
+                qreal newz_1 = currentPos_1.x() - 7;
                 if(moveY){
                     rect_1->setPos(newz_1, currentPos_1.y());
                 }else{
-                    if(rect_1->pos().y()>10){
-                        rect_1->setPos(newz_1, currentPos_1.y()-1);
+                    if(rect_1->pos().y()>10 && rect_1->pos().y()<370 ){
+                        if(UP){
+                            rect_1->setPos(newz_1, currentPos_1.y()-1);
+                        }else{
+                            rect_1->setPos(newz_1, currentPos_1.y()+1);
+                        }
+
                     }else{
                         rect_1->setPos(newz_1, currentPos_1.y());
                     }
