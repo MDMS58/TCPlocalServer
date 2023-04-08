@@ -4,6 +4,6 @@ bulletNode::bulletNode()
 {
     nextBullet=nullptr;
     id=0;
-    health=60;
+    health=30;
     damage=20;
 }

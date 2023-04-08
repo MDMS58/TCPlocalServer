@@ -1,4 +1,4 @@
-﻿#include "thread.h"
+#include "thread.h"
 #include "bulletNode.h"
 
 #include <QThread>
@@ -11,8 +11,11 @@
 int itemId;
 int enemyId;
 
-int num_items = 15;
-int num_enemies=5;
+int num_items = 25;
+int num_enemies=10;
+
+int enemiesKilled=0;
+QVariant round1=1;
 
 QTimer *timer = new QTimer();
 QTimer *timer1 = new QTimer();
@@ -78,7 +81,7 @@ void MyThread::widget_1(){
         bulletNode *aux= list.head;
         while(aux!=nullptr) {
             QGraphicsPixmapItem* rect = aux->item;
-            if(aux->item->pos().x()>-1201){
+            if(aux->item->pos().x()>-2999){
                 QPointF currentPos = rect->pos();
                 qreal newz = currentPos.x() + 5;
                 rect->setPos(newz, currentPos.y());
@@ -91,6 +94,7 @@ void MyThread::widget_1(){
                     rect->setPos(newz,item->pos().y()+52.5);
                 }
             }
+
             aux=aux->nextBullet;
         }
 
@@ -115,19 +119,29 @@ void MyThread::checkCollision(){
 
                     qDebug()<<aux->damage;
                     qDebug()<<aux_1->health;
-                    aux->item->setPos(-1300, 10);
+                    aux->item->setPos(-3000, 10);
                     scene->removeItem(aux->item);
-                    if (aux_1->health==0){
-                        aux_1->item->setPos(-1300, 50);
+                    if (aux_1->health<=0){
+                        aux_1->item->setPos(-3000, 50);
 
+                        enemiesKilled++;
+                    }
+                            qDebug()<<round1<< " " <<   enemiesKilled;
+                    if((enemiesKilled==5 && round1==1)||(enemiesKilled==7 && round1==2)){
+                        bulletNode *aux=enemiesList.head;
+                        for (int i = 0; i < num_enemies; i++) {
+                            int numAleatorio = QRandomGenerator::global()->bounded(414);
 
-                        scene->removeItem(aux_1->item);
+                            aux->item->setPos(2000-i*100, numAleatorio);
+                            aux=aux->nextBullet;
+                            enemiesKilled=0;
+
+                            if(round1==1) round1=2;
+
+                        }
                     }
 
-                    itemId=(aux_1->id);
-                    enemyId=(aux->id);
 
-                    booleansControler=true;
 
                 }
                 aux_1=aux_1->nextBullet;
@@ -210,7 +224,7 @@ void MyThread::move(){
 
         QGraphicsPixmapItem* rect_1 = new QGraphicsPixmapItem(pixmap);
 
-        rect_1->setPos(1000-i*100, numAleatorio);
+        rect_1->setPos(1500-i*50, numAleatorio);
         rect_1->setScale(0.15);
 
         scene->addItem(rect_1);
@@ -224,9 +238,10 @@ void MyThread::move(){
 
     QObject::connect(timer4, &QTimer::timeout, [=]() {
         bulletNode *aux= enemiesList.head;
+        int Counter=0;
         while(aux!=nullptr){
             QGraphicsPixmapItem* rect_1 = aux->item;
-            if(aux->item->pos().x()>-1201){
+            if(aux->item->pos().x()>-2999){
                 QPointF currentPos_1 = rect_1->pos();
                 qreal newz_1 = currentPos_1.x() - 5;
                 rect_1->setPos(newz_1, currentPos_1.y());
@@ -237,7 +252,15 @@ void MyThread::move(){
                     rect_1->setPos(1000,numAleatorio);
                 }
 
+
             }
+            Counter++;
+            if(Counter==5 && round1==1) break;
+
+            if(Counter==7 && round1==2) {
+              round1=3;  break;}
+
+
             aux=aux->nextBullet;
         }
     }
