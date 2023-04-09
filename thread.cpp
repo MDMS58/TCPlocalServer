@@ -14,7 +14,7 @@ int enemyId;
 int num_items = 25;
 int num_enemies=10;
 
-int enemiesKilled=0;
+QVariant enemiesKilled=0;
 QVariant round1=1;
 
 QTimer *timer = new QTimer();
@@ -125,21 +125,24 @@ void MyThread::checkCollision(){
                     if (aux_1->health<=0){
                         aux_1->item->setPos(-3000, 50);
 
-                        enemiesKilled++;
+                        enemiesKilled=enemiesKilled.toInt()+1;
                     }
                             qDebug()<<round1<< " " <<   enemiesKilled;
                     if((enemiesKilled==5 && round1==1)||(enemiesKilled==7 && round1==2)){
                         bulletNode *aux=enemiesList.head;
                         for (int i = 0; i < num_enemies; i++) {
-                            int numAleatorio = QRandomGenerator::global()->bounded(414);
+                            int numAleatorio = QRandomGenerator::global()->bounded(370);
 
-                            aux->item->setPos(2000-i*100, numAleatorio);
+                            aux-> item ->setPos(1000+i*50, numAleatorio);
                             aux=aux->nextBullet;
-                            enemiesKilled=0;
 
-                            if(round1==1) round1=2;
 
                         }
+                        enemiesKilled=0;
+
+                        if(round1==1) {
+                            round1=2; }
+                        else if(round1==2) round1=3;
                     }
 
 
@@ -225,7 +228,7 @@ void MyThread::move(){
 
         QGraphicsPixmapItem* rect_1 = new QGraphicsPixmapItem(pixmap);
 
-        rect_1->setPos(1500-i*50, numAleatorio);
+        rect_1->setPos(1010+i*50, numAleatorio);
         rect_1->setScale(0.15);
         qreal randomNum = QRandomGenerator::global()->generateDouble();
         if (randomNum < 0.5) {
@@ -294,7 +297,8 @@ void MyThread::move(){
             if(Counter==5 && round1==1) break;
 
             if(Counter==7 && round1==2) {
-              round1=3;  break;}
+                break;}
+
 
 
             aux=aux->nextBullet;
