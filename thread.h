@@ -26,13 +26,14 @@ public:
 
     QGraphicsPixmapItem* item ;
 
+    void fixbug();
     void move();
     void itemMove();
     void widget_1();
     void checkCollision();
     void PlayerCollision();
     void pause();
-    void defineEnePos();
+    void definePos();
 
     explicit MyThread(QObject *parent = nullptr);
 

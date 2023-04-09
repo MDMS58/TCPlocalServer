@@ -12,7 +12,8 @@ int itemId;
 
 QVariant enemyId;
 
-QVariant num_items = 25;
+QVariant num_items1 = 30;
+QVariant num_items=30;
 QVariant num_enemies=5;
 
 QVariant enemiesKilled=0;
@@ -46,15 +47,16 @@ MyThread::MyThread(QObject *parent)
 
 }
 
-void MyThread::defineEnePos(){
+void MyThread::definePos(){
     QPixmap pixmap(":nave.png");
     bulletNode *aux= enemiesList.head;
+
     for (int i = 0; i < num_enemies.toInt(); i++) {
         int numAleatorio = QRandomGenerator::global()->bounded(370);
 
         QGraphicsPixmapItem* rect_1 = new QGraphicsPixmapItem(pixmap);
 
-        rect_1->setPos(1000+i*50, numAleatorio);
+        rect_1->setPos(1000+i*100, numAleatorio);
         rect_1->setScale(0.15);
         qreal randomNum = QRandomGenerator::global()->generateDouble();
         if (randomNum < 0.5) {
@@ -79,53 +81,118 @@ void MyThread::defineEnePos(){
         aux=aux->nextBullet;
 
     }
+
+    QPixmap pixmap1(":bulletFile.png");
+    bulletNode *aux1=list.head;
+
+    for (int i = 0; i < num_items.toInt(); i++) {
+        QGraphicsPixmapItem* rect1 = new QGraphicsPixmapItem(pixmap1);
+
+        rect1->setPos(-i*100, 52.5);
+        rect1->setScale(0.10);
+        scene->addItem(rect1);
+
+        aux1->item= rect1;
+        aux1=aux1->nextBullet;
+
+    }
+
+
 }
 
 void MyThread::pause(){
     QTimer *timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [=]() {
-        if(booleansControler){
-            if( flag==true  && flag1==true){
 
-                enemiesList.deleteNode(enemyId.toInt());
+        if( flag==true  && flag1==true){
 
 
 
-            }
             if((enemiesKilled==5 && round1==1)||(enemiesKilled==7 && round1==2)){
+
+                //enemiesList.deleteNode(enemyId.toInt());
+
+                enemiesList.deleteNodes();
+                qDebug()<<"lista de enemigos:";
+                enemiesList.show();
+
+                bulletNode *auxNode=list.head;
+
+                while(auxNode!=nullptr){
+                    scene->removeItem(auxNode->item);
+                    auxNode=auxNode->nextBullet;
+                }
+
+                list.deleteNodes();
+                qDebug()<<"lista de balas:";
+                enemiesList.show();
 
                 enemiesKilled=0;
                 if(round1==1){
-                    bulletList list;
-                    list.insert(7);
-                    enemiesList=list;
+
+                    bulletList auxlist;
+                    auxlist.insert(7);
+                    enemiesList=auxlist;
+
+                    bulletList auxlist1;
+                    auxlist1.insert(num_items1.toInt());
+                    num_items=num_items1;
+                    list=auxlist1;
+
                     num_enemies=7;
-                    MyThread::defineEnePos();
-                }else
+                    MyThread::definePos();
+
+                }else if(round1==2)
                 {
-                    bulletList list;
-                    list.insert(10);
-                    enemiesList=list;
+
+                    bulletList auxlist;
+                    auxlist.insert(10);
+                    enemiesList=auxlist;
+
+                    bulletList auxlist1;
+                    auxlist1.insert(num_items1.toInt());
+                    list=auxlist1;
+                    num_items=num_items1;
+
+
                     num_enemies=10;
-                    MyThread::defineEnePos();
+                    MyThread::definePos();
+
                 }
 
 
                 round1=round1.toInt()+1;
+                QThread::msleep(1500);
             }
+
+            qDebug()<<"lista de enemigos:";
+            enemiesList.show();
+
+            qDebug()<<"lista de balas:";
+            enemiesList.show();
+
+            enemyId=-1;
             booleansControler=false;
+            flag=false;
+            flag1=false;
+
+
         }
-        qDebug()<<enemyId;
+
+
+
 
     });
-    timer->start(1000);
+    timer->start(10);
 }
 
 void MyThread::checkCollision(){
     QObject::connect(timer1, &QTimer::timeout, [&]() {
-        bulletNode *aux=list.head;
-        bulletNode *aux_1=enemiesList.head;
+
         if(!booleansControler){
+            bulletNode *aux=list.head;
+            bulletNode *aux_1=enemiesList.head;
+            bool auxFlag=false;
             while(aux!=nullptr) {
                 while(aux_1!=nullptr) {
                     if (aux->item->collidesWithItem(aux_1->item)) {
@@ -133,16 +200,16 @@ void MyThread::checkCollision(){
                         aux_1->health=aux_1->health - aux->damage;
 
                         aux->item->setPos(-3000, 10);
-
+                        num_items1=num_items1.toInt()-1;
                         if (aux_1->health<=0){
                             aux_1->item->setPos(-3000, 50);
 
                             enemiesKilled=enemiesKilled.toInt()+1;
                             enemyId=aux_1->id;
-                            booleansControler=true;
-
+                            scene->removeItem(aux_1->item);
+                            auxFlag=true;
                         }
-
+                        scene->removeItem(aux->item);
                         qDebug()<< round1 << " " <<   enemiesKilled;
 
                     }
@@ -151,6 +218,8 @@ void MyThread::checkCollision(){
 
                 aux_1=enemiesList.head;
                 aux=aux->nextBullet;
+                if(auxFlag) booleansControler=true;
+
             }
         }
     }
@@ -173,7 +242,7 @@ void MyThread::widget_1(){
     for (int i = 0; i < num_items.toInt(); i++) {
         QGraphicsPixmapItem* rect = new QGraphicsPixmapItem(pixmap);
 
-        rect->setPos(-1250+(i+1)*55, 52.5);
+        rect->setPos(-2900+(i+1)*100, 52.5);
         rect->setScale(0.10);
         scene->addItem(rect);
 
@@ -284,7 +353,7 @@ void MyThread::move(){
 
         QGraphicsPixmapItem* rect_1 = new QGraphicsPixmapItem(pixmap);
 
-        rect_1->setPos(1000+i*50, numAleatorio);
+        rect_1->setPos(1000+i*100, numAleatorio);
         rect_1->setScale(0.15);
         qreal randomNum = QRandomGenerator::global()->generateDouble();
         if (randomNum < 0.5) {
@@ -341,7 +410,6 @@ void MyThread::move(){
                         int numAleatorio = QRandomGenerator::global()->bounded(420);
                         rect_1->setPos(1000,numAleatorio);
                     }
-
 
                 }
 

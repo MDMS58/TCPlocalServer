@@ -27,6 +27,26 @@ void bulletList:: insert(int bulletAmount){
         bulletAmount--;
     }
 }
+int bulletList::counter(){
+    bulletNode *aux=head;
+    while(aux!=nullptr){
+        elements++;
+        aux=aux->nextBullet;
+    }
+    return elements;
+}
+void bulletList:: deleteNodes(){
+
+    bulletNode *aux=head;
+    while(aux!=nullptr){
+        bulletNode *aux2=aux;
+        aux=aux->nextBullet;
+        delete aux2;
+    }
+    head=nullptr;
+
+
+}
 void bulletList::deleteNode(int bullet_id) {
     bulletNode *aux = head;
     bulletNode *auxBefore = head;
@@ -46,7 +66,6 @@ void bulletList::deleteNode(int bullet_id) {
     while (flag && aux != nullptr) {
         if (i == bullet_id) {
             auxBefore->nextBullet = aux->nextBullet;
-
             break;
         }
         i++;
