@@ -29,7 +29,7 @@ void bulletList:: insert(int bulletAmount){
 }
 void bulletList::deleteNode(int bullet_id) {
     bulletNode *aux = head;
-    bulletNode *auxBefore = nullptr;
+    bulletNode *auxBefore = head;
     bool flag=true;
 
     if (head == nullptr) {

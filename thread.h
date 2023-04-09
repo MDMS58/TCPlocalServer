@@ -32,6 +32,7 @@ public:
     void checkCollision();
     void PlayerCollision();
     void pause();
+    void defineEnePos();
 
     explicit MyThread(QObject *parent = nullptr);
 
