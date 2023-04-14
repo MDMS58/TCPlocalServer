@@ -1,10 +1,13 @@
 #include "thread.h"
 #include "bulletNode.h"
-
+#include <QDialog>
+#include <QLabel>
 #include <QThread>
 #include <QTimer>
+#include <QVBoxLayout>
 #include <QRandomGenerator>
-
+#include <QtXml/QtXml>
+#include <QFile>
 #include "listid.h"
 
 
@@ -12,18 +15,22 @@ int itemId;
 
 QVariant enemyId;
 
-QVariant num_items1 = 30;
-QVariant num_items=30;
-QVariant num_enemies=5;
+QVariant num_items1 = 90;
+QVariant num_items=90;
+QVariant num_enemies=3;
 
 QVariant enemiesKilled=0;
 QVariant round1=1;
 
-QTimer *timer = new QTimer();
-QTimer *timer1 = new QTimer();
-QTimer *timer2 = new QTimer();
-QTimer *timer3 = new QTimer();
-QTimer *timer4 = new QTimer();
+
+
+
+QVariant fileName=":strategy1";
+QVariant power1="";
+QVariant counterPower1=0;
+QVariant power2="";
+
+
 
 bool booleansControler=false;
 
@@ -39,12 +46,59 @@ bool x=false;
 
 MyThread::MyThread(QObject *parent)
     : QThread(parent)
+
 {
     scene = new QGraphicsScene(0,0,1000,500);
     view = new QGraphicsView(scene);
     QPixmap pixma((":nave1.png"));
     item = new QGraphicsPixmapItem(pixma);
 
+}
+
+void MyThread::powers(){
+
+    QTimer *timer = new QTimer();
+
+    QObject::connect(timer, &QTimer::timeout, [=]() {
+
+        // Create an instance of QDomDocument to represent the XML document
+        QDomDocument xmlDocument;
+
+        // Load the XML document from a file
+        QFile file(fileName.toString());
+
+        if (!file.open(QIODevice::ReadOnly)) {
+            qDebug() << "Error opening file:" << file.errorString();
+
+        }
+
+        if (!xmlDocument.setContent(&file)) {
+
+            file.close();
+
+
+        }
+
+        file.close();
+
+
+        // Traverse the XML document
+        QDomElement root = xmlDocument.documentElement();
+        QDomNodeList childNodes = root.childNodes();
+
+        for (int i = 0; i < childNodes.count(); i++) {
+            QDomNode childNode = childNodes.item(i);
+            if (childNode.isElement()) {
+                QDomElement childElement = childNode.toElement();
+                if (childElement.tagName() == "strategy") {
+
+                    power1 = childElement.firstChildElement("power1").text();
+                    power2 = childElement.firstChildElement("power2").text();
+                }
+            }
+        }
+    });
+    timer->start(100);
 }
 
 void MyThread::definePos(){
@@ -108,13 +162,13 @@ void MyThread::pause(){
 
 
 
-            if((enemiesKilled==5 && round1==1)||(enemiesKilled==7 && round1==2)){
+            if((enemiesKilled==num_enemies) ){
 
                 //enemiesList.deleteNode(enemyId.toInt());
 
                 enemiesList.deleteNodes();
-                qDebug()<<"lista de enemigos:";
-                enemiesList.show();
+
+
 
                 bulletNode *auxNode=list.head;
 
@@ -124,52 +178,51 @@ void MyThread::pause(){
                 }
 
                 list.deleteNodes();
-                qDebug()<<"lista de balas:";
-                enemiesList.show();
-
                 enemiesKilled=0;
-                if(round1==1){
+                if(round1!=5){
 
-                    bulletList auxlist;
-                    auxlist.insert(7);
-                    enemiesList=auxlist;
+                bulletList auxlist;
 
-                    bulletList auxlist1;
-                    auxlist1.insert(num_items1.toInt());
-                    num_items=num_items1;
-                    list=auxlist1;
+                num_enemies=num_enemies.toInt()+2;
+                auxlist.insert(num_enemies.toInt());
+                enemiesList=auxlist;
 
-                    num_enemies=7;
-                    MyThread::definePos();
+                bulletList auxlist1;
+                auxlist1.insert(num_items1.toInt());
+                list=auxlist1;
+                num_items=num_items1;
 
-                }else if(round1==2)
-                {
-
-                    bulletList auxlist;
-                    auxlist.insert(10);
-                    enemiesList=auxlist;
-
-                    bulletList auxlist1;
-                    auxlist1.insert(num_items1.toInt());
-                    list=auxlist1;
-                    num_items=num_items1;
-
-
-                    num_enemies=10;
-                    MyThread::definePos();
-
+                MyThread::definePos();
                 }
 
+                if(round1==1) fileName=":strategy2";
+                if(round1==5) {
+                    QDialog* dialog = new QDialog();
 
+                    dialog->setWindowTitle("");
+                    QLabel* label = new QLabel("Ganaste!!", dialog);
+
+                    dialog->setLayout(new QVBoxLayout);
+                    dialog->layout()->addWidget(label);
+
+                    int x = 1000; // posición horizontal
+                    int y = 1000; // posición vertical
+                    dialog->move(x, y);
+
+                    dialog->show();
+                    QTimer::singleShot(2*5000, [=]() {
+                        scene->clear();
+                        scene->views().first()->close();
+                        dialog->close();
+
+                    });
+
+                }
                 round1=round1.toInt()+1;
                 QThread::msleep(1500);
             }
 
-            qDebug()<<"lista de enemigos:";
-            enemiesList.show();
 
-            qDebug()<<"lista de balas:";
-            enemiesList.show();
 
             enemyId=-1;
             booleansControler=false;
@@ -187,7 +240,8 @@ void MyThread::pause(){
 }
 
 void MyThread::checkCollision(){
-    QObject::connect(timer1, &QTimer::timeout, [&]() {
+    QTimer *timer = new QTimer();
+    QObject::connect(timer, &QTimer::timeout, [&]() {
 
         if(!booleansControler){
             bulletNode *aux=list.head;
@@ -199,11 +253,10 @@ void MyThread::checkCollision(){
 
                         aux_1->health=aux_1->health - aux->damage;
 
-                        aux->item->setPos(-3000, 10);
+                        aux->item->setPos(-3500, -3000);
                         num_items1=num_items1.toInt()-1;
                         if (aux_1->health<=0){
-                            aux_1->item->setPos(-3000, 50);
-
+                            aux_1->item->setPos(-3000, -50);
                             enemiesKilled=enemiesKilled.toInt()+1;
                             enemyId=aux_1->id;
                             scene->removeItem(aux_1->item);
@@ -226,7 +279,7 @@ void MyThread::checkCollision(){
 
 
     );
-    timer1->start(50);
+    timer->start(100);
 }
 
 void MyThread::widget_1(){
@@ -242,7 +295,7 @@ void MyThread::widget_1(){
     for (int i = 0; i < num_items.toInt(); i++) {
         QGraphicsPixmapItem* rect = new QGraphicsPixmapItem(pixmap);
 
-        rect->setPos(-2900+(i+1)*100, 52.5);
+        rect->setPos(-(i+1)*100, 52.5);
         rect->setScale(0.10);
         scene->addItem(rect);
 
@@ -251,13 +304,13 @@ void MyThread::widget_1(){
 
     }
     scene->addItem(item);
-
+    QTimer *timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [&]() {
         if(!booleansControler){
             bulletNode *aux= list.head;
             while(aux!=nullptr) {
                 QGraphicsPixmapItem* rect = aux->item;
-                if(aux->item->pos().x()>-2999){
+                if(aux->item->pos().y()>0){
                     QPointF currentPos = rect->pos();
                     qreal newz = currentPos.x() + 5;
                     rect->setPos(newz, currentPos.y());
@@ -289,8 +342,8 @@ void MyThread::widget_1(){
 void MyThread::PlayerCollision()
 {
 
-
-    QObject::connect(timer2, &QTimer::timeout, [&]() {
+    QTimer *timer = new QTimer();
+    QObject::connect(timer, &QTimer::timeout, [&]() {
 
 
         bulletNode *aux_1=enemiesList.head;
@@ -314,14 +367,14 @@ void MyThread::PlayerCollision()
     }
 
     );
-    timer2->start(50);
+    timer->start(50);
 }
 
 void MyThread::itemMove(){
 
 
-
-    QObject::connect(timer3, &QTimer::timeout, [=]() {
+    QTimer *timer = new QTimer();
+    QObject::connect(timer, &QTimer::timeout, [=]() {
         if(condition==1){
             if(item->pos().y()<370){
                 item->moveBy(0, 20);
@@ -337,7 +390,7 @@ void MyThread::itemMove(){
 
 
     });
-    timer3->start(50);
+    timer->start(50);
 
 
 }
@@ -355,6 +408,7 @@ void MyThread::move(){
 
         rect_1->setPos(1000+i*100, numAleatorio);
         rect_1->setScale(0.15);
+        scene->addItem(rect_1);
         qreal randomNum = QRandomGenerator::global()->generateDouble();
         if (randomNum < 0.5) {
 
@@ -372,7 +426,7 @@ void MyThread::move(){
         }
 
 
-        scene->addItem(rect_1);
+
 
         aux->item=rect_1;
         aux=aux->nextBullet;
@@ -380,67 +434,76 @@ void MyThread::move(){
     }
     scene->addItem(item);
 
-
-    QObject::connect(timer4, &QTimer::timeout, [=]() {
-        if(!booleansControler){
+    QTimer *timer = new QTimer();
+    QObject::connect(timer, &QTimer::timeout, [=]() {
+        if(!booleansControler ){
             bulletNode *aux= enemiesList.head;
-
-            while(aux!=nullptr){
-                QGraphicsPixmapItem* rect_1 = aux->item;
-                bool moveY= rect_1->data(1).toBool();
-                bool UP= rect_1->data(2).toBool();
-                if(aux->item->pos().x()>-2999){
-                    QPointF currentPos_1 = rect_1->pos();
-                    qreal newz_1 = currentPos_1.x() - 7;
-                    if(moveY){
-                        rect_1->setPos(newz_1, currentPos_1.y());
-                    }else{
-                        if(rect_1->pos().y()>10 && rect_1->pos().y()<370 ){
-                            if(UP){
-                                rect_1->setPos(newz_1, currentPos_1.y()-1);
-                            }else{
-                                rect_1->setPos(newz_1, currentPos_1.y()+1);
-                            }
-
-                        }else{
+            if( counterPower1.toInt()<=0){
+                while(aux!=nullptr){
+                    QGraphicsPixmapItem* rect_1 = aux->item;
+                    bool moveY= rect_1->data(1).toBool();
+                    bool UP= rect_1->data(2).toBool();
+                    if(aux->item->pos().y()>0){
+                        QPointF currentPos_1 = rect_1->pos();
+                        qreal newz_1 = currentPos_1.x() - 7;
+                        if(moveY){
                             rect_1->setPos(newz_1, currentPos_1.y());
-                        }
-                    }
-                    if (newz_1 <= 0) {
-                        int numAleatorio = QRandomGenerator::global()->bounded(420);
-                        rect_1->setPos(1000,numAleatorio);
-                    }
+                        }else{
+                            if(rect_1->pos().y()>10 && rect_1->pos().y()<370 ){
+                                if(UP){
+                                    rect_1->setPos(newz_1, currentPos_1.y()-1);
+                                }else{
+                                    rect_1->setPos(newz_1, currentPos_1.y()+1);
+                                }
 
+                            }else{
+                                rect_1->setPos(newz_1, currentPos_1.y());
+                            }
+                        }
+                        if (newz_1 <= 0) {
+                            int numAleatorio = QRandomGenerator::global()->bounded(420);
+                            rect_1->setPos(1000,numAleatorio);
+                        }
+
+                    }
+                    aux=aux->nextBullet;
                 }
 
-                aux=aux->nextBullet;
+            }else{
+                counterPower1=counterPower1.toInt()-1;
+                qDebug()<<counterPower1.toInt();
+                if(counterPower1==0) counterPower1=-1;
             }
         }
         else{
             flag1=true;
+
         }
     }
     );
 
 
-    timer4->start(50);
+    timer->start(50);
 }
 
 void MyThread::run()
 {
     bool fla=false;
+    bool flag=false;
+    bool flagP=false;
 
     while (fla==false) {
         QObject::connect(server->socket, &QTcpSocket::readyRead, [&]() {
 
             QByteArray data = server->socket->readAll();
 
-            if(data=="1"){
-                MyThread::widget_1();
-                MyThread::move();
-                MyThread::itemMove();
-                MyThread::checkCollision();
-                MyThread::pause();
+            if(data=="start"){
+                widget_1();
+                move();
+                itemMove();
+                checkCollision();
+                pause();
+                powers();
             }
             else if (data=="S"){
                 condition=1;
@@ -448,11 +511,79 @@ void MyThread::run()
             else if (data=="W"){
                 condition=2;
 
+            }
+            else if(data=="1"){
+                if(power1=="1" && counterPower1!=-1) counterPower1=40;
+            }
+            else if(data=="2"){
+                if(!flag ){
+                    if(power2=="2"){
+                        bulletNode *aux=list.head;
+                        while(aux!=nullptr){
+                            aux->damage=20;
+                            aux=aux->nextBullet;
+                        }
+                        flag=true;
+                    }
+                    else{
+                        QString file=":strategy1";
+                        waitPower(file);
+                    }
+                }
 
+
+            }
+            else if(data=="3"){
+                if(!flagP){
+                    if(  power1=="3"){
+                        bulletNode *aux=enemiesList.head;
+                        while(aux!=nullptr){
+                            if(aux->item->pos().x()>0){
+                                aux->item->setPos(-3000, -50);
+                                scene-> removeItem(aux->item);
+                                enemiesKilled=enemiesKilled.toInt()+1;
+                            }
+                            aux=aux->nextBullet;
+                        }
+                        flagP=true;
+                    }
+                    else{
+                        QString file=":strategy2";
+                        waitPower(file);
+                    }
+
+
+                }
             }
 
         });
 
         msleep(100);
     }
+}
+
+void MyThread::waitPower(QString file){
+    QDialog* dialog = new QDialog();
+
+    // Establecer el título y el contenido de la ventana emergente
+    dialog->setWindowTitle("");
+    QLabel* label = new QLabel("Poder no encontrado", dialog);
+
+    dialog->setLayout(new QVBoxLayout);
+    dialog->layout()->addWidget(label);
+
+    // Establecer la posición de la ventana emergente en la pantalla
+    int x = 100; // posición horizontal
+    int y = 100; // posición vertical
+    dialog->move(x, y);
+
+    // Mostrar la ventana emergente
+    dialog->show();
+
+    // Esperar 5 segundos antes de cerrar la ventana emergente
+    QTimer::singleShot(5000, [=]() {
+        fileName=file;
+        dialog->close();
+    });
+
 }

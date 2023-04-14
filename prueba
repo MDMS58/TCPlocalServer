@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<students>
+    <student>
+        <name>John</name>
+        <age>20</age>
+        <gender>male</gender>
+        <major>Computer Science</major>
+        <grade>8.5</grade>
+    </student>
+    <student>
+        <name>Sarah</name>
+        <age>22</age>
+        <gender>female</gender>
+        <major>Business</major>
+        <grade>9.0</grade>
+    </student>
+    <student>
+        <name>Michael</name>
+        <age>21</age>
+        <gender>male</gender>
+        <major>Engineering</major>
+        <grade>7.8</grade>
+    </student>
+</students>
+

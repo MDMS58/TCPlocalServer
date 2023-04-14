@@ -26,7 +26,7 @@ public:
 
     QGraphicsPixmapItem* item ;
 
-    void fixbug();
+
     void move();
     void itemMove();
     void widget_1();
@@ -34,6 +34,8 @@ public:
     void PlayerCollision();
     void pause();
     void definePos();
+    void waitPower(QString file);
+    void powers();
 
     explicit MyThread(QObject *parent = nullptr);
 

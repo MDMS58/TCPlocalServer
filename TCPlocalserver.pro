@@ -1,4 +1,4 @@
-QT       += core gui network
+QT       += core gui network xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -38,4 +38,6 @@ DISTFILES +=
 RESOURCES += \
     bulletFile.qrc \
     main.qrc \
-    naveFile.qrc
+    naveFile.qrc \
+    stra1.qrc \
+    stra2.qrc
