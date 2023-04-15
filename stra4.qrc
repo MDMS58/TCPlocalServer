@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>strategy4</file>
+    </qresource>
+</RCC>

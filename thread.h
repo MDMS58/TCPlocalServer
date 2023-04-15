@@ -38,6 +38,8 @@ public:
     void powers();
     void reduceSpeed(int localSpeed);
     void increaseSpeed(int localSpeed);
+    void halfDamage();
+    void DoubleDamage();
     explicit MyThread(QObject *parent = nullptr);
 
 

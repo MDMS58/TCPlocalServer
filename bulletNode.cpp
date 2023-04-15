@@ -6,4 +6,5 @@ bulletNode::bulletNode()
     id=0;
     health=30;
     damage=20;
+    erasable=false;
 }

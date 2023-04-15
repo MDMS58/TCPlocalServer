@@ -26,10 +26,12 @@ QVariant power1="";
 QVariant counterPower1=0;
 QVariant power2="";
 QVariant life=80;
-QVariant bulletSpeed=15;
+QVariant bulletSpeed=20;
 
 
 bool booleansControler=false;
+bool doubleDamage=false;
+bool HalfDamage=false;
 
 bool flag=false;
 bool flag1=false;
@@ -171,7 +173,7 @@ void MyThread::pause(){
                     auxNode=auxNode->nextBullet;
                 }
 
-                list.deleteNodes();
+
                 enemiesKilled=0;
                 if(round1!=5){
 
@@ -181,9 +183,12 @@ void MyThread::pause(){
                     auxlist.insert(num_enemies.toInt());
                     enemiesList=auxlist;
 
-                    bulletList auxlist1;
-                    auxlist1.insert(num_items1.toInt());
-                    list=auxlist1;
+                    list.show();
+
+                    list=list.resetList(list);
+
+                    list.show();
+
                     num_items=num_items1;
 
                     MyThread::definePos();
@@ -244,10 +249,12 @@ void MyThread::checkCollision(){
             while(aux!=nullptr) {
                 while(aux_1!=nullptr) {
                     if (aux->item->collidesWithItem(aux_1->item)) {
-
+                        if(doubleDamage)
+                            aux_1->health=aux_1->health - aux->damage;
                         aux_1->health=aux_1->health - aux->damage;
 
                         aux->item->setPos(-3500, -3000);
+                        aux->erasable=true;
                         num_items1=num_items1.toInt()-1;
                         if (aux_1->health<=0){
                             aux_1->item->setPos(-3000, -50);
@@ -311,7 +318,7 @@ void MyThread::widget_1(){
 
                     if (newz >= 1000) {
                         aux->damage=aux->damage-5;
-                        rect->setPos(20,item->pos().y()+52.5);
+                        rect->setPos(-100*num_items.toInt(),item->pos().y()+52.5);
                     }
                     if (newz < 0) {
                         rect->setPos(newz,item->pos().y()+52.5);
@@ -344,7 +351,13 @@ void MyThread::PlayerCollision()
 
         while(aux_1!=nullptr) {
             if (item->collidesWithItem(aux_1->item)) {
-                aux_1->item->setPos(-10, 50);
+                if(HalfDamage)
+                    life=life.toInt()-5;
+                else{
+                    life=life.toInt()-10;
+                }
+
+
             }
 
             aux_1=aux_1->nextBullet;
@@ -483,6 +496,8 @@ void MyThread::run()
     bool flagP1=false;
     bool flagP2=false;
     bool flagP3=false;
+    bool flagP4=false;
+    bool flagP5=false;
 
     while (fla==false) {
         QObject::connect(server->socket, &QTcpSocket::readyRead, [&]() {
@@ -504,6 +519,7 @@ void MyThread::run()
                 condition=2;
 
             }
+
             else if(data=="1"){
                 if(power1=="1" && counterPower1!=-1) counterPower1=40;
             }
@@ -546,8 +562,6 @@ void MyThread::run()
                         QString file=":strategy2";
                         waitPower(file);
                     }
-
-
                 }
             }
             else if(data=="4"){
@@ -561,8 +575,6 @@ void MyThread::run()
                         QString file=":strategy2";
                         waitPower(file);
                     }
-
-
                 }
             }
             else if(data=="5"){
@@ -576,7 +588,6 @@ void MyThread::run()
                         QString file=":strategy3";
                         waitPower(file);
                     }
-
                 }
             }
             else if(data=="6"){
@@ -590,22 +601,54 @@ void MyThread::run()
                         QString file=":strategy3";
                         waitPower(file);
                     }
-
-
+                }
+            }
+            else if(data=="7"){
+                if(!flagP4){
+                    if(  power1=="7"){
+                        HalfDamage=true;
+                        halfDamage();
+                        flagP4=true;
+                    }
+                    else{
+                        QString file=":strategy4";
+                        waitPower(file);
+                    }
+                }
+            }
+            else if(data=="8"){
+                if(!flagP4){
+                    if(  power2=="8"){
+                        doubleDamage=true;
+                        DoubleDamage();
+                        flagP4=true;
+                    }
+                    else{
+                        QString file=":strategy4";
+                        waitPower(file);
+                    }
                 }
             }
 
         });
-
         msleep(100);
     }
 }
 
-
+void MyThread::DoubleDamage(){
+    QTimer::singleShot(2500, [=]{
+        doubleDamage=false;
+    });
+}
+void MyThread::halfDamage(){
+    QTimer::singleShot(2500, [=]{
+        HalfDamage=false;
+    });
+}
 void MyThread::increaseSpeed(int localSpeed){
     bulletSpeed=bulletSpeed.toInt()+10;
     QTimer::singleShot(5000, [=]() {
-          bulletSpeed=localSpeed;
+        bulletSpeed=localSpeed;
     });
 }
 void MyThread::reduceSpeed(int localSpeed){

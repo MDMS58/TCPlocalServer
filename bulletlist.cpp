@@ -25,6 +25,7 @@ void bulletList:: insert(int bulletAmount){
             aux->nextBullet=newBulletNode;}
 
         bulletAmount--;
+        if(bulletAmount==0) last=newBulletNode;
     }
 }
 int bulletList::counter(){
@@ -83,4 +84,26 @@ void bulletList:: show(){
         aux=aux->nextBullet;
 
     }
+}
+bulletList bulletList:: resetList(bulletList list){
+    bulletNode *newHead=nullptr;
+    bulletNode *aux=list.head;
+     bulletNode *auxiliar=aux;
+    while(aux!=nullptr){
+        if(!aux->erasable){
+            if(newHead==nullptr){
+               newHead=aux;
+            }
+            else{
+                bulletNode *secondAux=newHead;
+                while (secondAux!=nullptr) {
+                    secondAux=secondAux->nextBullet;
+                }
+                secondAux=aux;
+            }
+        }
+
+
+        aux=aux->nextBullet;
+    }    bulletList newList;    newList.head=newHead;    return newList;
 }

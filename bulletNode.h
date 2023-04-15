@@ -7,6 +7,8 @@ class bulletNode
 public:
     QGraphicsPixmapItem *item;
     bulletNode *nextBullet;
+    bool erasable;
+
 
     int health;
     int damage;
