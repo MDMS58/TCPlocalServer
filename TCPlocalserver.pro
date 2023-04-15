@@ -41,4 +41,5 @@ RESOURCES += \
     main.qrc \
     naveFile.qrc \
     stra1.qrc \
-    stra2.qrc
+    stra2.qrc \
+    stra3.qrc

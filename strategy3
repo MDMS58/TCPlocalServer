@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <strategies>
     <strategy>
-        <power1>1</power1>
-        <power2>2</power2>
+        <power1>5</power1>
+        <power2>6</power2>
     </strategy>
-
 </strategies>
 

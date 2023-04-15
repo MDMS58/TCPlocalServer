@@ -36,7 +36,8 @@ public:
     void definePos();
     void waitPower(QString file);
     void powers();
-
+    void reduceSpeed(int localSpeed);
+    void increaseSpeed(int localSpeed);
     explicit MyThread(QObject *parent = nullptr);
 
 

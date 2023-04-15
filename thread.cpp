@@ -10,7 +10,6 @@
 #include <QFile>
 #include "listid.h"
 
-
 int itemId;
 
 QVariant enemyId;
@@ -22,24 +21,20 @@ QVariant speed=7;
 QVariant enemiesKilled=0;
 QVariant round1=1;
 
-
-
-
 QVariant fileName=":strategy1";
 QVariant power1="";
 QVariant counterPower1=0;
 QVariant power2="";
 QVariant life=80;
+QVariant bulletSpeed=15;
 
 
 bool booleansControler=false;
-
 
 bool flag=false;
 bool flag1=false;
 bool flag2=false;
 bool flag3=false;
-
 
 bool x=false;
 
@@ -72,13 +67,9 @@ void MyThread::powers(){
 
         if (!file.open(QIODevice::ReadOnly)) {
             qDebug() << "Error opening file:" << file.errorString();
-
         }
-
         if (!xmlDocument.setContent(&file)) {
-
             file.close();
-
 
         }
 
@@ -94,12 +85,12 @@ void MyThread::powers(){
             if (childNode.isElement()) {
                 QDomElement childElement = childNode.toElement();
                 if (childElement.tagName() == "strategy") {
-
                     power1 = childElement.firstChildElement("power1").text();
                     power2 = childElement.firstChildElement("power2").text();
                 }
             }
         }
+        qDebug() << file.readAll();
     });
     timer->start(100);
 }
@@ -315,7 +306,7 @@ void MyThread::widget_1(){
                 QGraphicsPixmapItem* rect = aux->item;
                 if(aux->item->pos().y()>0){
                     QPointF currentPos = rect->pos();
-                    qreal newz = currentPos.x() + 20;
+                    qreal newz = currentPos.x() + bulletSpeed.toInt();
                     rect->setPos(newz, currentPos.y());
 
                     if (newz >= 1000) {
@@ -490,6 +481,8 @@ void MyThread::run()
     bool flag=false;
     bool flagP=false;
     bool flagP1=false;
+    bool flagP2=false;
+    bool flagP3=false;
 
     while (fla==false) {
         QObject::connect(server->socket, &QTcpSocket::readyRead, [&]() {
@@ -541,10 +534,13 @@ void MyThread::run()
                                 aux->item->setPos(-3000, -50);
                                 scene-> removeItem(aux->item);
                                 enemiesKilled=enemiesKilled.toInt()+1;
+                                booleansControler=true;
+
+                                flagP=true;
+                                break;
                             }
                             aux=aux->nextBullet;
                         }
-                        flagP=true;
                     }
                     else{
                         QString file=":strategy2";
@@ -557,11 +553,41 @@ void MyThread::run()
             else if(data=="4"){
                 if(!flagP1){
                     if(  power2=="4"){
+                        qDebug()<<"entro";
                         life=80;
-                        flagP=true;
+                        flagP1=true;
                     }
                     else{
                         QString file=":strategy2";
+                        waitPower(file);
+                    }
+
+
+                }
+            }
+            else if(data=="5"){
+                if(!flagP2){
+                    if(  power1=="5"){
+                        int localSpeed=speed.toInt();
+                        reduceSpeed(localSpeed);
+                        flagP2=true;
+                    }
+                    else{
+                        QString file=":strategy3";
+                        waitPower(file);
+                    }
+
+                }
+            }
+            else if(data=="6"){
+                if(!flagP3){
+                    if(  power2=="6"){
+                        int localSpeed=speed.toInt();
+                        increaseSpeed(localSpeed);
+                        flagP3=true;
+                    }
+                    else{
+                        QString file=":strategy3";
                         waitPower(file);
                     }
 
@@ -575,25 +601,36 @@ void MyThread::run()
     }
 }
 
+
+void MyThread::increaseSpeed(int localSpeed){
+    bulletSpeed=bulletSpeed.toInt()+10;
+    QTimer::singleShot(5000, [=]() {
+          bulletSpeed=localSpeed;
+    });
+}
+void MyThread::reduceSpeed(int localSpeed){
+    speed=speed.toInt()/2;
+    QTimer::singleShot(5000, [=]() {
+        speed=localSpeed;
+    });
+}
 void MyThread::waitPower(QString file){
     QDialog* dialog = new QDialog();
 
-    // Establecer el título y el contenido de la ventana emergente
     dialog->setWindowTitle("");
     QLabel* label = new QLabel("Poder no encontrado", dialog);
 
     dialog->setLayout(new QVBoxLayout);
     dialog->layout()->addWidget(label);
 
-    // Establecer la posición de la ventana emergente en la pantalla
+
     int x = 100; // posición horizontal
     int y = 100; // posición vertical
     dialog->move(x, y);
 
-    // Mostrar la ventana emergente
     dialog->show();
 
-    // Esperar 5 segundos antes de cerrar la ventana emergente
+
     QTimer::singleShot(5000, [=]() {
         fileName=file;
         dialog->close();
