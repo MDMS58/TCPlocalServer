@@ -1,4 +1,4 @@
-QT       += core gui network xml
+QT       += core gui network xml multimedia multimediawidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -36,6 +36,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DISTFILES +=
 
 RESOURCES += \
+    backG.qrc \
     bulletFile.qrc \
     main.qrc \
     naveFile.qrc \

@@ -18,7 +18,7 @@ QVariant enemyId;
 QVariant num_items1 = 90;
 QVariant num_items=90;
 QVariant num_enemies=3;
-
+QVariant speed=7;
 QVariant enemiesKilled=0;
 QVariant round1=1;
 
@@ -29,7 +29,7 @@ QVariant fileName=":strategy1";
 QVariant power1="";
 QVariant counterPower1=0;
 QVariant power2="";
-
+QVariant life=80;
 
 
 bool booleansControler=false;
@@ -49,6 +49,9 @@ MyThread::MyThread(QObject *parent)
 
 {
     scene = new QGraphicsScene(0,0,1000,500);
+    QPixmap pixap(":background"); // Cargar la imagen de disco
+    QBrush textureBrush(pixap);
+    scene->setBackgroundBrush(textureBrush);
     view = new QGraphicsView(scene);
     QPixmap pixma((":nave1.png"));
     item = new QGraphicsPixmapItem(pixma);
@@ -181,18 +184,18 @@ void MyThread::pause(){
                 enemiesKilled=0;
                 if(round1!=5){
 
-                bulletList auxlist;
+                    bulletList auxlist;
 
-                num_enemies=num_enemies.toInt()+2;
-                auxlist.insert(num_enemies.toInt());
-                enemiesList=auxlist;
+                    num_enemies=num_enemies.toInt()+2;
+                    auxlist.insert(num_enemies.toInt());
+                    enemiesList=auxlist;
 
-                bulletList auxlist1;
-                auxlist1.insert(num_items1.toInt());
-                list=auxlist1;
-                num_items=num_items1;
+                    bulletList auxlist1;
+                    auxlist1.insert(num_items1.toInt());
+                    list=auxlist1;
+                    num_items=num_items1;
 
-                MyThread::definePos();
+                    MyThread::definePos();
                 }
 
                 if(round1==1) fileName=":strategy2";
@@ -312,7 +315,7 @@ void MyThread::widget_1(){
                 QGraphicsPixmapItem* rect = aux->item;
                 if(aux->item->pos().y()>0){
                     QPointF currentPos = rect->pos();
-                    qreal newz = currentPos.x() + 5;
+                    qreal newz = currentPos.x() + 20;
                     rect->setPos(newz, currentPos.y());
 
                     if (newz >= 1000) {
@@ -348,17 +351,12 @@ void MyThread::PlayerCollision()
 
         bulletNode *aux_1=enemiesList.head;
 
-
-        for (int i = 0; i < num_enemies.toInt(); i++) {
+        while(aux_1!=nullptr) {
             if (item->collidesWithItem(aux_1->item)) {
-
-
                 aux_1->item->setPos(-10, 50);
-
-
             }
-            if(aux_1->nextBullet!=nullptr)
-                aux_1=aux_1->nextBullet;
+
+            aux_1=aux_1->nextBullet;
 
 
         }
@@ -445,7 +443,7 @@ void MyThread::move(){
                     bool UP= rect_1->data(2).toBool();
                     if(aux->item->pos().y()>0){
                         QPointF currentPos_1 = rect_1->pos();
-                        qreal newz_1 = currentPos_1.x() - 7;
+                        qreal newz_1 = currentPos_1.x() - speed.toInt();
                         if(moveY){
                             rect_1->setPos(newz_1, currentPos_1.y());
                         }else{
@@ -491,6 +489,7 @@ void MyThread::run()
     bool fla=false;
     bool flag=false;
     bool flagP=false;
+    bool flagP1=false;
 
     while (fla==false) {
         QObject::connect(server->socket, &QTcpSocket::readyRead, [&]() {
@@ -545,6 +544,20 @@ void MyThread::run()
                             }
                             aux=aux->nextBullet;
                         }
+                        flagP=true;
+                    }
+                    else{
+                        QString file=":strategy2";
+                        waitPower(file);
+                    }
+
+
+                }
+            }
+            else if(data=="4"){
+                if(!flagP1){
+                    if(  power2=="4"){
+                        life=80;
                         flagP=true;
                     }
                     else{
