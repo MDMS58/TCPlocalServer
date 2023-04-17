@@ -14,8 +14,8 @@ int itemId;
 
 QVariant enemyId;
 
-QVariant num_items1 = 90;
-QVariant num_items=90;
+QVariant num_items1 = 230;
+QVariant num_items=   230;
 QVariant num_enemies=3;
 QVariant speed;
 QVariant enemiesKilled=0;
@@ -32,6 +32,7 @@ QVariant bulletSpeed=20;
 
 QVariant counter1=0;
 QVariant information[4][5];
+QVariant information1[4][5];
 QVariant fase=0;
 
 
@@ -116,7 +117,7 @@ void MyThread::definePos(){
         if(Aleatorio%2==0){
             rect_1 = new QGraphicsPixmapItem(pixmap);
         }else{
-             rect_1 = new QGraphicsPixmapItem(pix);
+            rect_1 = new QGraphicsPixmapItem(pix);
         }
 
 
@@ -176,6 +177,7 @@ void MyThread::pause(){
 
             if((enemiesKilled==num_enemies) ){
 
+                qDebug()<<round1;
                 //enemiesList.deleteNode(enemyId.toInt());
 
                 enemiesList.deleteNodes();
@@ -226,7 +228,46 @@ void MyThread::pause(){
                     MyThread::definePos();
                 }
 
+                if(round1==5 && fase==0){
+                    counter1=0;
+                    round1=0;
+                    fase=1;
+                }
+
+                if(round1!=5 && fase==1){
+
+                    bulletList auxlist;
+
+                    num_enemies=information1[0][counter1.toInt()];
+                    speed=information1[2][counter1.toInt()];
+                    information1[3][counter1.toInt()]=life;
+
+                    auxlist.insert(num_enemies.toInt());
+                    enemiesList=auxlist;
+
+                    bulletNode *aux=enemiesList.head;
+
+                    //Modifica la vida de enemigos
+
+                    while(aux!=nullptr){
+                        aux->damage=information1[0][counter1.toInt()].toInt();
+                        aux=aux->nextBullet;
+                    }
+
+                    counter1=counter1.toInt()+1;
+                   // list.show();
+
+                    list=list.resetList(list);
+
+                  //  list.show();
+
+                    num_items=num_items1;
+
+                    MyThread::definePos();
+                }
+
                 if(round1==1) fileName=":strategy2";
+
                 if(round1==5) {
                     QDialog* dialog = new QDialog();
 
@@ -249,7 +290,9 @@ void MyThread::pause(){
                     });
 
                 }
+
                 round1=round1.toInt()+1;
+
                 QThread::msleep(1500);
             }
 
@@ -431,7 +474,7 @@ void MyThread::itemMove(){
 
 void MyThread::move(){
     QPixmap pixmap(":nave.png");
-     QPixmap pix(":nave22 .png");
+    QPixmap pix(":nave22 .png");
 
     enemiesList.insert(num_enemies.toInt());
 
@@ -545,6 +588,8 @@ void MyThread::run()
 
             QByteArray data = server->socket->readAll();
 
+
+            //Nivel escogido
             if(data=="start"){
                 /* Enemigos */              information[0][0]=3; information[0][1]=5; information[0][2]=7;information[0][3]=9; information[0][4]=11;
 
@@ -553,6 +598,17 @@ void MyThread::run()
                 /* Velocidad de enemigos */ information[2][0]=6; information[2][1]=8; information[2][2]=10; information[2][3]=12; information[2][4]=14;
 
                 /* Vida del jugador */      information[3][0]=50; information[3][1]=50; information[3][2]=50; information[3][3]=50; information[3][4]=50;
+
+
+
+                /* Enemigos Fase 2 */              information1[0][0]=5; information1[0][1]=7; information1[0][2]=9;information1[0][3]=10; information1[0][4]=12;
+
+                /* Vida enemigos Fase 2 */         information1[1][0]=20; information1[1][1]=35; information1[1][2]=45; information1[1][3]=50; information1[1][4]=55;
+
+                /* Velocidad de enemigos Fase 2 */ information1[2][0]=6; information1[2][1]=8; information1[2][2]=10; information1[2][3]=12; information1[2][4]=14;
+
+                /* Vida del jugador Fase 2 */      information1[3][0]=50; information1[3][1]=50; information1[3][2]=50; information1[3][3]=50; information1[3][4]=50;
+
 
                 speed=information[2][0];
                 num_enemies=information[0][0];
@@ -564,7 +620,80 @@ void MyThread::run()
                 pause();
                 powers();
             }
+            if(data=="start1"){
+                /* Enemigos */              information[0][0]=4; information[0][1]=6; information[0][2]=7;information[0][3]=8; information[0][4]=9;
 
+                /* Vida enemigos */         information[1][0]=20; information[1][1]=30; information[1][2]=40;information[1][3]=50; information[1][4]=60;
+
+                /* Velocidad de enemigos */ information[2][0]=6; information[2][1]=8; information[2][2]=10; information[2][3]=14; information[2][4]=16;
+
+                /* Vida del jugador */      information[3][0]=40; information[3][1]=40; information[3][2]=40; information[3][3]=40; information[3][4]=40;
+
+
+
+                /* Enemigos Fase 2 */              information1[0][0]=5; information1[0][1]=7; information1[0][2]=9;information1[0][3]=10; information1[0][4]=12;
+
+                /* Vida enemigos Fase 2 */         information1[1][0]=20; information1[1][1]=35; information1[1][2]=45; information1[1][3]=50; information1[1][4]=55;
+
+                /* Velocidad de enemigos Fase 2 */ information1[2][0]=7; information1[2][1]=9; information1[2][2]=11; information1[2][3]=13; information1[2][4]=15;
+
+                /* Vida del jugador Fase 2 */      information1[3][0]=40; information1[3][1]=40; information1[3][2]=40; information1[3][3]=40; information1[3][4]=40;
+
+
+                QVariant num_items1 =170;
+                QVariant num_items  =170;
+
+                bulletSpeed=18;
+                life=40;
+                speed=information[2][0];
+                num_enemies=information[0][0];
+
+                widget_1();
+                move();
+                itemMove();
+                checkCollision();
+                pause();
+                powers();
+            }
+            if(data=="start2"){
+                /* Enemigos */              information[0][0]=5; information[0][1]=6; information[0][2]=7;information[0][3]=8; information[0][4]=9;
+
+                /* Vida enemigos */         information[1][0]=20; information[1][1]=35; information[1][2]=45;information[1][3]=55; information[1][4]=60;
+
+                /* Velocidad de enemigos */ information[2][0]=8; information[2][1]=9; information[2][2]=11; information[2][3]=14; information[2][4]=19;
+
+                /* Vida del jugador */      information[3][0]=30; information[3][1]=30; information[3][2]=30; information[3][3]=30; information[3][4]=30;
+
+
+
+                /* Enemigos Fase 2 */              information1[0][0]=5; information1[0][1]=7; information1[0][2]=9;information1[0][3]=10; information1[0][4]=12;
+
+                /* Vida enemigos Fase 2 */         information1[1][0]=20; information1[1][1]=35; information1[1][2]=45; information1[1][3]=55; information1[1][4]=60;
+
+                /* Velocidad de enemigos Fase 2 */ information1[2][0]=8; information1[2][1]=9; information1[2][2]=11; information1[2][3]=14; information1[2][4]=19;
+
+                /* Vida del jugador Fase 2 */      information1[3][0]=30; information1[3][1]=30; information1[3][2]=30; information1[3][3]=30; information1[3][4]=30;
+
+
+                QVariant num_items1 =100;
+                QVariant num_items  =100;
+
+                bulletSpeed=18;
+                life=40;
+                speed=information[2][0];
+                num_enemies=information[0][0];
+
+                widget_1();
+                move();
+                itemMove();
+                checkCollision();
+                pause();
+                powers();
+            }
+
+
+
+            //Movimiento
             else if (data=="S"){
                 condition=1;
             }
@@ -688,6 +817,8 @@ void MyThread::run()
         msleep(100);
     }
 }
+
+
 
 
 

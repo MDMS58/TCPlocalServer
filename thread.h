@@ -9,6 +9,7 @@
 #include <QPointF>
 #include <QGraphicsRectItem>
 #include <bulletlist.h>
+#include <QLabel>
 
 class MyThread : public QThread
 {
@@ -18,6 +19,7 @@ public:
     LocalServer *server;
     QGraphicsScene *scene ;
     QGraphicsView *view ;
+    QLabel *label ;
     QVariant condition=0;
 
     bulletList enemiesList;
@@ -39,6 +41,7 @@ public:
     void reduceSpeed(int localSpeed);
     void increaseSpeed(int localSpeed);
     void halfDamage();
+    void showInformation();
     void DoubleDamage();
     explicit MyThread(QObject *parent = nullptr);
 
