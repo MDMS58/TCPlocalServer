@@ -17,7 +17,7 @@ QVariant enemyId;
 QVariant num_items1 = 90;
 QVariant num_items=90;
 QVariant num_enemies=3;
-QVariant speed=7;
+QVariant speed;
 QVariant enemiesKilled=0;
 QVariant round1=1;
 
@@ -25,8 +25,14 @@ QVariant fileName=":strategy1";
 QVariant power1="";
 QVariant counterPower1=0;
 QVariant power2="";
+
 QVariant life=80;
 QVariant bulletSpeed=20;
+
+
+QVariant counter1=0;
+QVariant information[4][5];
+QVariant fase=0;
 
 
 bool booleansControler=false;
@@ -175,13 +181,29 @@ void MyThread::pause(){
 
 
                 enemiesKilled=0;
-                if(round1!=5){
+                if(round1!=5 && fase==0){
 
                     bulletList auxlist;
 
-                    num_enemies=num_enemies.toInt()+2;
+                    counter1=counter1.toInt()+1;
+
+                    num_enemies=information[0][counter1.toInt()];
+                    speed=information[2][counter1.toInt()];
+                    information[3][counter1.toInt()]=life;
+
+
+
                     auxlist.insert(num_enemies.toInt());
                     enemiesList=auxlist;
+
+                    bulletNode *aux=enemiesList.head;
+
+                    //Modifica la vida de enemigos
+
+                    while(aux!=nullptr){
+                        aux->damage=information[0][counter1.toInt()].toInt();
+                        aux=aux->nextBullet;
+                    }
 
                     list.show();
 
@@ -505,6 +527,17 @@ void MyThread::run()
             QByteArray data = server->socket->readAll();
 
             if(data=="start"){
+                /* Enemigos */              information[0][0]=3; information[0][1]=5; information[0][2]=7;information[0][3]=9; information[0][4]=11;
+
+                /* Vida enemigos */         information[1][0]=20; information[1][1]=30; information[1][2]=35;information[1][3]=40; information[1][4]=45;
+
+                /* Velocidad de enemigos */ information[2][0]=6; information[2][1]=8; information[2][2]=10; information[2][3]=12; information[2][4]=14;
+
+                /* Vida del jugador */      information[3][0]=50; information[3][1]=50; information[3][2]=50; information[3][3]=50; information[3][4]=50;
+
+                speed=information[2][0];
+                num_enemies=information[0][0];
+
                 widget_1();
                 move();
                 itemMove();
@@ -512,6 +545,7 @@ void MyThread::run()
                 pause();
                 powers();
             }
+
             else if (data=="S"){
                 condition=1;
             }
@@ -520,10 +554,11 @@ void MyThread::run()
 
             }
 
-            else if(data=="1"){
+            //PODERES
+            else if(data=="1") {
                 if(power1=="1" && counterPower1!=-1) counterPower1=40;
             }
-            else if(data=="2"){
+            else if(data=="2") {
                 if(!flag ){
                     if(power2=="2"){
                         bulletNode *aux=list.head;
@@ -541,7 +576,7 @@ void MyThread::run()
 
 
             }
-            else if(data=="3"){
+            else if(data=="3") {
                 if(!flagP){
                     if(  power1=="3"){
                         bulletNode *aux=enemiesList.head;
@@ -564,7 +599,7 @@ void MyThread::run()
                     }
                 }
             }
-            else if(data=="4"){
+            else if(data=="4") {
                 if(!flagP1){
                     if(  power2=="4"){
                         qDebug()<<"entro";
@@ -577,7 +612,7 @@ void MyThread::run()
                     }
                 }
             }
-            else if(data=="5"){
+            else if(data=="5") {
                 if(!flagP2){
                     if(  power1=="5"){
                         int localSpeed=speed.toInt();
@@ -590,7 +625,7 @@ void MyThread::run()
                     }
                 }
             }
-            else if(data=="6"){
+            else if(data=="6") {
                 if(!flagP3){
                     if(  power2=="6"){
                         int localSpeed=speed.toInt();
@@ -603,7 +638,7 @@ void MyThread::run()
                     }
                 }
             }
-            else if(data=="7"){
+            else if(data=="7") {
                 if(!flagP4){
                     if(  power1=="7"){
                         HalfDamage=true;
@@ -616,12 +651,12 @@ void MyThread::run()
                     }
                 }
             }
-            else if(data=="8"){
-                if(!flagP4){
+            else if(data=="8") {
+                if(!flagP5){
                     if(  power2=="8"){
                         doubleDamage=true;
                         DoubleDamage();
-                        flagP4=true;
+                        flagP5=true;
                     }
                     else{
                         QString file=":strategy4";
@@ -635,28 +670,34 @@ void MyThread::run()
     }
 }
 
+
+
 void MyThread::DoubleDamage(){
     QTimer::singleShot(2500, [=]{
         doubleDamage=false;
     });
 }
+
 void MyThread::halfDamage(){
     QTimer::singleShot(2500, [=]{
         HalfDamage=false;
     });
 }
+
 void MyThread::increaseSpeed(int localSpeed){
     bulletSpeed=bulletSpeed.toInt()+10;
     QTimer::singleShot(5000, [=]() {
         bulletSpeed=localSpeed;
     });
 }
+
 void MyThread::reduceSpeed(int localSpeed){
     speed=speed.toInt()/2;
     QTimer::singleShot(5000, [=]() {
         speed=localSpeed;
     });
 }
+
 void MyThread::waitPower(QString file){
     QDialog* dialog = new QDialog();
 
