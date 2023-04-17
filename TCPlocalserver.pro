@@ -40,6 +40,7 @@ RESOURCES += \
     bulletFile.qrc \
     main.qrc \
     naveFile.qrc \
+    naveenemiga2.qrc \
     stra1.qrc \
     stra2.qrc \
     stra3.qrc \

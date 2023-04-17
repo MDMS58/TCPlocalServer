@@ -105,12 +105,22 @@ void MyThread::powers(){
 
 void MyThread::definePos(){
     QPixmap pixmap(":nave.png");
+    QPixmap pix(":nave22 .png");
+
     bulletNode *aux= enemiesList.head;
 
     for (int i = 0; i < num_enemies.toInt(); i++) {
         int numAleatorio = QRandomGenerator::global()->bounded(370);
+        int Aleatorio = QRandomGenerator::global()->bounded(3);
+        QGraphicsPixmapItem* rect_1;
+        if(Aleatorio%2==0){
+            rect_1 = new QGraphicsPixmapItem(pixmap);
+        }else{
+             rect_1 = new QGraphicsPixmapItem(pix);
+        }
 
-        QGraphicsPixmapItem* rect_1 = new QGraphicsPixmapItem(pixmap);
+
+
 
         rect_1->setPos(1000+i*100, numAleatorio);
         rect_1->setScale(0.15);
@@ -421,6 +431,7 @@ void MyThread::itemMove(){
 
 void MyThread::move(){
     QPixmap pixmap(":nave.png");
+     QPixmap pix(":nave22 .png");
 
     enemiesList.insert(num_enemies.toInt());
 
@@ -428,7 +439,15 @@ void MyThread::move(){
     for (int i = 0; i < num_enemies.toInt(); i++) {
         int numAleatorio = QRandomGenerator::global()->bounded(370);
 
-        QGraphicsPixmapItem* rect_1 = new QGraphicsPixmapItem(pixmap);
+        int Aleatorio = QRandomGenerator::global()->bounded(3);
+        QGraphicsPixmapItem* rect_1;
+        if(Aleatorio%2==0){
+            rect_1 = new QGraphicsPixmapItem(pixmap);
+        }else{
+            rect_1 = new QGraphicsPixmapItem(pix);
+        }
+
+
 
         rect_1->setPos(1000+i*100, numAleatorio);
         rect_1->setScale(0.15);
