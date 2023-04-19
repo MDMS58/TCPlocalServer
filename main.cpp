@@ -3,12 +3,10 @@
 #include <localserver.h>
 #include <QThread>
 #include <thread.h>
-
-
 #include "bulletitem.h"
-
 #include "bulletlist.h"
 #include <iostream>
+
 class serverManager{
 public:
     LocalServer *server;

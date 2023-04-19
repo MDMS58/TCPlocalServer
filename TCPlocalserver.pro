@@ -11,18 +11,14 @@ CONFIG += c++11
 SOURCES += \
     bulletNode.cpp \
     bulletlist.cpp \
-    listid.cpp \
     localserver.cpp \
     main.cpp \
-    nodeid.cpp \
     thread.cpp
 
 HEADERS += \
     bulletNode.h \
     bulletlist.h \
-    listid.h \
     localserver.h \
-    nodeid.h \
     thread.h
 
 FORMS += \

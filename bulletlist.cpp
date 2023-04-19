@@ -1,5 +1,6 @@
 #include "bulletlist.h"
 #include <QDebug>
+
 bulletList::bulletList()
 {
     head=nullptr;
@@ -28,6 +29,7 @@ void bulletList:: insert(int bulletAmount){
         if(bulletAmount==0) last=newBulletNode;
     }
 }
+
 int bulletList::counter(){
     bulletNode *aux=head;
     while(aux!=nullptr){
@@ -36,6 +38,7 @@ int bulletList::counter(){
     }
     return elements;
 }
+
 void bulletList:: deleteNodes(){
 
     bulletNode *aux=head;
@@ -48,6 +51,7 @@ void bulletList:: deleteNodes(){
 
 
 }
+
 void bulletList::deleteNode(int bullet_id) {
     bulletNode *aux = head;
     bulletNode *auxBefore = head;
@@ -74,9 +78,11 @@ void bulletList::deleteNode(int bullet_id) {
         aux = aux->nextBullet;
     }
 }
+
 void operator delete(void* ptr){
     free(ptr);
 }
+
 void bulletList:: show(){
     bulletNode *aux=head;
     while(aux!=nullptr){
@@ -85,6 +91,7 @@ void bulletList:: show(){
 
     }
 }
+
 bulletList bulletList:: resetList(bulletList list){
     bulletNode *newHead=nullptr;
     bulletNode *aux=list.head;

@@ -25,9 +25,9 @@ QVariant fileName=":strategy1";
 QVariant power1="";
 QVariant counterPower1=0;
 QVariant power2="";
-
 QVariant life=80;
 QVariant bulletSpeed=20;
+QVariant SpeedControler=-1;
 
 
 QVariant counter1=0;
@@ -172,17 +172,10 @@ void MyThread::pause(){
     QObject::connect(timer, &QTimer::timeout, [=]() {
 
         if( flag==true  && flag1==true){
-
-
-
             if((enemiesKilled==num_enemies) ){
-
-                qDebug()<<round1;
                 //enemiesList.deleteNode(enemyId.toInt());
 
                 enemiesList.deleteNodes();
-
-
 
                 bulletNode *auxNode=list.head;
 
@@ -190,7 +183,6 @@ void MyThread::pause(){
                     scene->removeItem(auxNode->item);
                     auxNode=auxNode->nextBullet;
                 }
-
 
                 enemiesKilled=0;
                 if(round1!=5 && fase==0){
@@ -202,8 +194,6 @@ void MyThread::pause(){
                     num_enemies=information[0][counter1.toInt()];
                     speed=information[2][counter1.toInt()];
                     information[3][counter1.toInt()]=life;
-
-
 
                     auxlist.insert(num_enemies.toInt());
                     enemiesList=auxlist;
@@ -255,11 +245,11 @@ void MyThread::pause(){
                     }
 
                     counter1=counter1.toInt()+1;
-                   // list.show();
+                    // list.show();
 
                     list=list.resetList(list);
 
-                  //  list.show();
+                    //  list.show();
 
                     num_items=num_items1;
 
@@ -267,6 +257,9 @@ void MyThread::pause(){
                 }
 
                 if(round1==1) fileName=":strategy2";
+                if(round1==2) fileName=":strategy3";
+                if(round1==3) fileName=":strategy4";
+                if(round1==4) fileName=":strategy1";
 
                 if(round1==5) {
                     QDialog* dialog = new QDialog();
@@ -420,27 +413,28 @@ void MyThread::PlayerCollision()
 
     QTimer *timer = new QTimer();
     QObject::connect(timer, &QTimer::timeout, [&]() {
-
+        qDebug()<<life;
 
         bulletNode *aux_1=enemiesList.head;
-
-        while(aux_1!=nullptr) {
-            if (item->collidesWithItem(aux_1->item)) {
+        bool flagcita=false;
+        while(aux_1!=nullptr && !flagcita ) {
+            if (aux_1->item->pos().x()<=5) {
                 if(HalfDamage)
                     life=life.toInt()-5;
                 else{
                     life=life.toInt()-10;
                 }
-
-
             }
+
 
             aux_1=aux_1->nextBullet;
 
 
         }
-
-        aux_1=aux_1->nextBullet;
+        if(flagcita){
+            QTimer::singleShot(1000, [&]() {
+                flagcita=false;
+            });}
     }
 
     );
@@ -588,6 +582,11 @@ void MyThread::run()
 
             QByteArray data = server->socket->readAll();
 
+            if(data=="v0") SpeedControler=0;
+            if(data=="v1") SpeedControler=1;
+            if(data=="v2") SpeedControler=2;
+            if(data=="v3") SpeedControler=3;
+            if(data=="v4") SpeedControler=4;
 
             //Nivel escogido
             if(data=="start"){
@@ -616,9 +615,12 @@ void MyThread::run()
                 widget_1();
                 move();
                 itemMove();
-                checkCollision();
+                //checkCollision();
                 pause();
                 powers();
+                PlayerCollision();
+                lose();
+                potentiometer();
             }
             if(data=="start1"){
                 /* Enemigos */              information[0][0]=4; information[0][1]=6; information[0][2]=7;information[0][3]=8; information[0][4]=9;
@@ -654,6 +656,9 @@ void MyThread::run()
                 checkCollision();
                 pause();
                 powers();
+                PlayerCollision();
+                lose();
+                potentiometer();
             }
             if(data=="start2"){
                 /* Enemigos */              information[0][0]=5; information[0][1]=6; information[0][2]=7;information[0][3]=8; information[0][4]=9;
@@ -689,9 +694,10 @@ void MyThread::run()
                 checkCollision();
                 pause();
                 powers();
+                PlayerCollision();
+                lose();
+                potentiometer();
             }
-
-
 
             //Movimiento
             else if (data=="S"){
@@ -819,8 +825,49 @@ void MyThread::run()
 }
 
 
+void MyThread::potentiometer(){
+    QTimer *timer = new QTimer();
+    QObject::connect(timer, &QTimer::timeout, [=]() {
+        if(SpeedControler==0) speed=4;
+        if(SpeedControler==1) speed=8;
+        if(SpeedControler==2) speed=12;
+        if(SpeedControler==3) speed=16;
+        if(SpeedControler==4) speed=20;
+    } );
+    timer->start(100);
+}
+
+void MyThread::lose(){
+    QTimer *timer = new QTimer();
+    QObject::connect(timer, &QTimer::timeout, [=]() {
+    if(life.toInt()<=0 || num_items1==0){
+        QDialog* dialog = new QDialog();
+
+        dialog->setWindowTitle("");
+        QLabel* label = new QLabel("Perdiste!!", dialog);
+
+        dialog->setLayout(new QVBoxLayout);
+        dialog->layout()->addWidget(label);
+
+        int x = 1000; // posición horizontal
+        int y = 1000; // posición vertical
+        dialog->move(x, y);
+        life=1000;
+        speed=0;
+        bulletSpeed=0;
+        dialog->show();
+        QTimer::singleShot(2*5000, [=]() {
+            scene->clear();
+            scene->views().first()->close();
+            dialog->close();
+
+        });
+    }
+    });
+    timer->start(100);
 
 
+}
 
 void MyThread::DoubleDamage(){
     QTimer::singleShot(2500, [=]{
